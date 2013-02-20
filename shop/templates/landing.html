@@ -1,0 +1,112 @@
+{% extends "index.html" %}
+{% block content %}
+
+    <div class="jumbotron">
+        <h1>Django hosting, anyone?</h1>
+
+        <p class="lead">An easy way to deploy Django projects.</p>
+        <a class="btn btn-large btn-success" href="#">Sign up for a 1-month
+            trial</a>
+    </div>
+
+    <div class="row">
+    <div class="span9">
+        <h3>
+            Pricing
+        </h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Plan</th>
+                <th class="cc">Storage</th>
+                <th class="cc">Virtual hosts</th>
+                <th class="cc">Monthly Cost</th>
+                <th class="cc">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Django-1</td>
+                <td class="cc">2 GB</td>
+                <td class="cc">1</td>
+                <td class="cc">$15</td>
+                <td class="cc">
+                    <a href="#"
+                       onclick="$('#shared-rs-ssd-details').modal('show')">Details</a>
+                </td>
+            </tr>
+            </tbody>
+            <tbody>
+            <tr>
+                <td>Django-3</td>
+                <td class="cc">6 GB</td>
+                <td class="cc">3</td>
+                <td class="cc">$40</td>
+                <td class="cc">
+                    <a href="#"
+                       onclick="$('#shared-rs-large-details').modal('show')">Details</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Django-10</td>
+                <td class="cc">20 GB</td>
+                <td class="cc">10</td>
+                <td class="cc">$115</td>
+                <td class="cc">
+                    <a href="#"
+                       onclick="$('#shared-rs-small-details').modal('show')">Details</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Django-50</td>
+                <td class="cc">100 GB</td>
+                <td class="cc">50</td>
+                <td class="cc">$560</td>
+                <td class="cc">
+                    <a href="#"
+                       onclick="$('#shared-large-details').modal('show')">Details</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="row-fluid marketing">
+            <div class="span6">
+                <h4>Subheading</h4>
+
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas
+                    faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at
+                    eros.
+                    Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Maecenas sed diam eget risus varius blandit sit amet non
+                    magna.</p>
+            </div>
+
+            <div class="span6">
+                <h4>Subheading</h4>
+
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas
+                    faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at
+                    eros.
+                    Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Maecenas sed diam eget risus varius blandit sit amet non
+                    magna.</p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

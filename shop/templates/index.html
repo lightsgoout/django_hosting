@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Can I host pls k thx</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css"
+          rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/main.css" rel="stylesheet">
+
+
+</head>
+<body>
+
+
+<div class="container-narrow">
+    <header class="page-header">
+        {% include "header.html" %}
+    </header>
+    {% block content %} {% endblock %}
+</div>
+</body>
+</html>
