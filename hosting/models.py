@@ -1,5 +1,5 @@
+from django.contrib.auth.models import User
 from django.db import models
-from accounts.models import Client
 from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
 
@@ -8,7 +8,14 @@ HOSTING_SERVICE_STATUS_CHOICES = (
     ('T', 'ACTIVE_TEST'),
     ('A', 'ACTIVE'),
     ('B', 'BLOCKED'),
-    ('E', 'EXPIRED')
+    ('E', 'EXPIRED'),
+)
+
+HOSTING_ACCOUNT_STATUS_CHOICES = (
+    ('T', 'ACTIVE_TEST'),
+    ('A', 'ACTIVE'),
+    ('B', 'BLOCKED'),
+    ('E', 'EXPIRED'),
 )
 
 
@@ -18,11 +25,15 @@ class DjangoHostingTariff(models.Model):
 
 
 class DjangoHostingAccount(models.Model):
-    client = models.ForeignKey(Client, related_name='hosting_accounts',
+    client = models.ForeignKey(User,
+                               related_name='hosting_accounts',
                                on_delete=models.PROTECT)
     tariff = models.ForeignKey(DjangoHostingTariff, on_delete=models.PROTECT)
     start_at = models.DateTimeField(auto_now_add=True)
     end_at = models.DateTimeField()
+    status = models.CharField(max_length=1,
+                              choices=HOSTING_ACCOUNT_STATUS_CHOICES,
+                              default='T')
 
 
 class DjangoHostingService(models.Model):
@@ -34,4 +45,5 @@ class DjangoHostingService(models.Model):
     home_path = models.CharField(max_length=255, unique=True)
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
-                              choices=HOSTING_SERVICE_STATUS_CHOICES)
+                              choices=HOSTING_SERVICE_STATUS_CHOICES,
+                              default='T')
