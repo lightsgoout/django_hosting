@@ -76,8 +76,8 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
                 service.status = instance.status
                 service.save()
         else:
-            print 'shitloadoffuck'
             if service.status != instance.status:
                 service.status = instance.status
                 service.save()
-                print 'saved status: ' + instance.status
+
+#def validate_django_hosting_service(sender, instance, **kwargs):
