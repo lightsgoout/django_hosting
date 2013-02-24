@@ -78,7 +78,7 @@ class DjangoHostingService(models.Model):
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
-                              default=HOSTING_SERVICE_ACTIVE_TEST)
+                              default=HOSTING_SERVICE_DEPLOY_IN_PROGRESS)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):

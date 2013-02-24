@@ -1,5 +1,7 @@
 from django.test import TestCase
-from hosting.models import DjangoHostingService, HOSTING_ACCOUNT_BLOCKED, HOSTING_SERVICE_DEPLOY_IN_PROGRESS, HOSTING_ACCOUNT_ACTIVE
+from hosting.models import DjangoHostingService, HOSTING_ACCOUNT_BLOCKED, \
+    HOSTING_SERVICE_DEPLOY_IN_PROGRESS, HOSTING_ACCOUNT_ACTIVE, \
+    HOSTING__VIRTUALENVS_PATH, HOSTING__HOME_PATH
 from hosting.tests import fixtures
 
 
@@ -50,7 +52,6 @@ class TestSignals(TestCase):
                 service.status
             )
 
-
     def test_update_django_hosting_service_status(self):
         """
         Ensure services are set to BLOCKED or EXPIRED if account is BLOCKED
@@ -62,5 +63,20 @@ class TestSignals(TestCase):
         for service in DjangoHostingService.objects.filter(account=account):
             self.assertEqual(account.status, service.status)
 
-
-
+    def test_auto_populate_virtualenv_and_home_path(self):
+        """
+        Ensure service's virtualenv_path and home_path is auto-populated
+        based on PK.
+        """
+        service = fixtures.create_django_hosting_service(
+            virtualenv_path=None,
+            home_path=None,
+        )
+        self.assertEqual(
+            service.virtualenv_path,
+            "%s%s" % (HOSTING__VIRTUALENVS_PATH, service.pk)
+        )
+        self.assertEqual(
+            service.home_path,
+            "%s%s" % (HOSTING__HOME_PATH, service.pk)
+        )
