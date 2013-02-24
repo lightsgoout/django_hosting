@@ -76,6 +76,24 @@ class DjangoHostingService(models.Model):
                               default=HOSTING_SERVICE_ACTIVE_TEST)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if not self.server.is_python_version_supported(self.python_version):
+            raise ValidationError(
+                '%s does not support %s' % (self.server, self.python_version)
+            )
+        if not self.django_version.is_python_version_supported(
+                self.python_version
+        ):
+            raise ValidationError(
+                '%s does not support %s' % (self.django_version,
+                                            self.python_version)
+            )
+
+        if not self.server.is_published:
+            raise ValidationError('%s is not published' % self.server)
+
 
 @receiver(signals.post_save, sender=DjangoHostingAccount)
 def update_django_hosting_service_status(sender, instance, **kwargs):
@@ -97,4 +115,4 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
                 service.status = instance.status
                 service.save()
 
-#def validate_django_hosting_service(sender, instance, **kwargs):
+
