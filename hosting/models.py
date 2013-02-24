@@ -4,6 +4,9 @@ from django.db.models import signals
 from django.dispatch import receiver
 from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
+HOSTING__HOME_PATH = "/home/hosting/"
+HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
+
 HOSTING_SERVICE_DEPLOY_IN_PROGRESS = 'D'
 HOSTING_SERVICE_ACTIVE_TEST = 'T'
 HOSTING_SERVICE_ACTIVE = 'A'
@@ -68,8 +71,10 @@ class DjangoHostingService(models.Model):
                                 related_name='hosting_services')
     python_version = models.ForeignKey(PythonVersion, on_delete=models.PROTECT)
     django_version = models.ForeignKey(DjangoVersion, on_delete=models.PROTECT)
-    virtualenv_path = models.CharField(max_length=255, unique=True)
-    home_path = models.CharField(max_length=255, unique=True)
+    virtualenv_path = models.CharField(max_length=255, unique=True, blank=True,
+                                       null=True)
+    home_path = models.CharField(max_length=255, unique=True, blank=True,
+                                 null=True)
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
@@ -94,6 +99,33 @@ class DjangoHostingService(models.Model):
         if not self.server.is_published:
             raise ValidationError('%s is not published' % self.server)
 
+    def __unicode__(self):
+        def get_status(status):
+            if status == HOSTING_SERVICE_ACTIVE:
+                return 'ACTIVE'
+            if status == HOSTING_SERVICE_DEPLOY_IN_PROGRESS:
+                return 'DEPLOY_IN_PROGRESS'
+            if status == HOSTING_SERVICE_ACTIVE_TEST:
+                return 'ACTIVE_TEST'
+            if status == HOSTING_ACCOUNT_BLOCKED:
+                return 'BLOCKED'
+            if status == HOSTING_ACCOUNT_EXPIRED:
+                return 'EXPIRED'
+
+        s = "[%s] %s %s at %s" % (get_status(self.status), self.pk,
+                                  self.account, self.server.hostname)
+        return s
+
+
+@receiver(signals.post_save, sender=DjangoHostingService)
+def populate_django_hosting_service_virtualenv_and_path(sender, instance,
+                                                        **kwargs):
+    if not instance.virtualenv_path or not instance.home_path:
+        instance.virtualenv_path = "%s%s" % (HOSTING__VIRTUALENVS_PATH,
+                                             instance.pk)
+        instance.home_path = "%s%s" % (HOSTING__HOME_PATH, instance.pk)
+        instance.save()
+
 
 @receiver(signals.post_save, sender=DjangoHostingAccount)
 def update_django_hosting_service_status(sender, instance, **kwargs):
@@ -114,5 +146,3 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
             if service.status != instance.status:
                 service.status = instance.status
                 service.save()
-
-
