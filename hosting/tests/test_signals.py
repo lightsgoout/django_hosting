@@ -1,15 +1,10 @@
 from django.test import TestCase
-from hosting.models import DjangoHostingService
+from hosting.models import DjangoHostingService, HOSTING_ACCOUNT_BLOCKED, HOSTING_SERVICE_DEPLOY_IN_PROGRESS, HOSTING_ACCOUNT_ACTIVE
 from hosting.tests import fixtures
 
 
 class TestSignals(TestCase):
-    def test_update_django_hosting_service_status(self):
-        """
-        Ensure services are set to BLOCKED or EXPIRED if account is BLOCKED
-        or EXPIRED
-        """
-
+    def _fix_up(self):
         account = fixtures.create_django_hosting_account(status='T')
         python_version = fixtures.create_python_version()
         django_version = fixtures.create_django_version(
@@ -19,7 +14,7 @@ class TestSignals(TestCase):
         django_server = fixtures.create_django_hosting_server(
             supported_python_versions=[python_version]
         )
-        service1 = fixtures.create_django_hosting_service(
+        fixtures.create_django_hosting_service(
             account=account,
             python_version=python_version,
             django_version=django_version,
@@ -27,7 +22,7 @@ class TestSignals(TestCase):
             home_path='test1',
             server=django_server,
         )
-        service2 = fixtures.create_django_hosting_service(
+        fixtures.create_django_hosting_service(
             account=account,
             python_version=python_version,
             django_version=django_version,
@@ -35,7 +30,34 @@ class TestSignals(TestCase):
             home_path='test2',
             server=django_server,
         )
-        account.status = 'B'
+        return account
+
+    def test_update_django_hosting_service_status_keep_deploying(self):
+        """
+        Ensure service's DEPLOY_IN_PROGRESS status not changes, if account's
+        one is set to ACTIVE, or TEST_ACTIVE
+        """
+        account = self._fix_up()
+        # prepare services, like they're already deploying
+        for service in DjangoHostingService.objects.filter(account=account):
+            service.status = HOSTING_SERVICE_DEPLOY_IN_PROGRESS
+            service.save()
+        account.status = HOSTING_ACCOUNT_ACTIVE
+        account.save()
+        for service in DjangoHostingService.objects.filter(account=account):
+            self.assertEqual(
+                HOSTING_SERVICE_DEPLOY_IN_PROGRESS,
+                service.status
+            )
+
+
+    def test_update_django_hosting_service_status(self):
+        """
+        Ensure services are set to BLOCKED or EXPIRED if account is BLOCKED
+        or EXPIRED
+        """
+        account = self._fix_up()
+        account.status = HOSTING_ACCOUNT_BLOCKED
         account.save()
         for service in DjangoHostingService.objects.filter(account=account):
             self.assertEqual(account.status, service.status)

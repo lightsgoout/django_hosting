@@ -7,6 +7,9 @@ class PythonVersion(models.Model):
     is_discontinued = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return "Python %s" % self.version_family
+
 
 class DjangoVersion(models.Model):
     version_family = models.CharField(max_length=15, unique=True)
@@ -20,6 +23,9 @@ class DjangoVersion(models.Model):
             supported_python_versions__version_family=
             python_version.version_family
         ).count() > 0
+
+    def __unicode__(self):
+        return "Django %s" % self.version_family
 
 
 class DjangoHostingServer(models.Model):

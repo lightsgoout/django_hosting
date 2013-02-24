@@ -4,20 +4,30 @@ from django.db.models import signals
 from django.dispatch import receiver
 from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
+HOSTING_SERVICE_DEPLOY_IN_PROGRESS = 'D'
+HOSTING_SERVICE_ACTIVE_TEST = 'T'
+HOSTING_SERVICE_ACTIVE = 'A'
+HOSTING_SERVICE_BLOCKED = 'B'
+HOSTING_SERVICE_EXPIRED = 'E'
 
 HOSTING_SERVICE_STATUS_CHOICES = (
-    ('D', 'DEPLOY_IN_PROGRESS'),
-    ('T', 'ACTIVE_TEST'),
-    ('A', 'ACTIVE'),
-    ('B', 'BLOCKED'),
-    ('E', 'EXPIRED'),
+    (HOSTING_SERVICE_DEPLOY_IN_PROGRESS, 'DEPLOY_IN_PROGRESS'),
+    (HOSTING_SERVICE_ACTIVE_TEST, 'ACTIVE_TEST'),
+    (HOSTING_SERVICE_ACTIVE, 'ACTIVE'),
+    (HOSTING_SERVICE_BLOCKED, 'BLOCKED'),
+    (HOSTING_SERVICE_EXPIRED, 'EXPIRED'),
 )
 
+HOSTING_ACCOUNT_ACTIVE_TEST = HOSTING_SERVICE_ACTIVE_TEST
+HOSTING_ACCOUNT_ACTIVE = HOSTING_SERVICE_ACTIVE
+HOSTING_ACCOUNT_BLOCKED = HOSTING_SERVICE_BLOCKED
+HOSTING_ACCOUNT_EXPIRED = HOSTING_SERVICE_EXPIRED
+
 HOSTING_ACCOUNT_STATUS_CHOICES = (
-    ('T', 'ACTIVE_TEST'),
-    ('A', 'ACTIVE'),
-    ('B', 'BLOCKED'),
-    ('E', 'EXPIRED'),
+    (HOSTING_ACCOUNT_ACTIVE_TEST, 'ACTIVE_TEST'),
+    (HOSTING_ACCOUNT_ACTIVE, 'ACTIVE'),
+    (HOSTING_ACCOUNT_BLOCKED, 'BLOCKED'),
+    (HOSTING_ACCOUNT_EXPIRED, 'EXPIRED'),
 )
 
 
@@ -33,6 +43,9 @@ class DjangoHostingTariff(models.Model):
     vhost_count = models.PositiveSmallIntegerField()
     has_backup = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return self.name
+
 
 class DjangoHostingAccount(models.Model):
     client = models.ForeignKey(User,
@@ -43,8 +56,11 @@ class DjangoHostingAccount(models.Model):
     end_at = models.DateTimeField()
     status = models.CharField(max_length=1,
                               choices=HOSTING_ACCOUNT_STATUS_CHOICES,
-                              default='T')
+                              default=HOSTING_ACCOUNT_ACTIVE_TEST)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return '%s\'s %s' % (self.client, self.tariff)
 
 
 class DjangoHostingService(models.Model):
@@ -57,7 +73,7 @@ class DjangoHostingService(models.Model):
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
-                              default='T')
+                              default=HOSTING_SERVICE_ACTIVE_TEST)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -67,8 +83,9 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
         account=instance
     )
     for service in services:
-        if service.status == 'D':
-            if instance.status in ('T', 'A'):
+        if service.status == HOSTING_SERVICE_DEPLOY_IN_PROGRESS:
+            if instance.status in (HOSTING_ACCOUNT_ACTIVE_TEST,
+                                   HOSTING_ACCOUNT_ACTIVE):
                 # continue deployment if account is active
                 pass
             else:
