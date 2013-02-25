@@ -4,3 +4,6 @@ psycopg2
 django-registration
 django-nose
 mock
+django-celery
+django-shell-plus
+ipdb

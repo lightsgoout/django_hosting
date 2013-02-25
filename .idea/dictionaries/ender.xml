@@ -4,10 +4,12 @@
       <w>clickjacking</w>
       <w>csrf</w>
       <w>django's</w>
+      <w>djcelery</w>
       <w>github</w>
       <w>inode</w>
       <w>middleware</w>
       <w>testovich</w>
+      <w>uwsgi</w>
       <w>venv</w>
       <w>vhost</w>
       <w>virtualenvs</w>

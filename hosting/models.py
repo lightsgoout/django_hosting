@@ -6,6 +6,7 @@ from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
 HOSTING__HOME_PATH = "/home/hosting/"
 HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
+HOSTING__UWSGI_PATH = HOSTING__HOME_PATH + ".uwsgi/"
 
 HOSTING_SERVICE_DEPLOY_IN_PROGRESS = 'D'
 HOSTING_SERVICE_ACTIVE_TEST = 'T'
@@ -45,6 +46,7 @@ class DjangoHostingTariff(models.Model):
     file_descriptors_per_process = models.IntegerField()
     vhost_count = models.PositiveSmallIntegerField()
     has_backup = models.BooleanField(default=True)
+    workers_per_host = models.PositiveSmallIntegerField()
 
     def __unicode__(self):
         return self.name
