@@ -1,12 +1,21 @@
+import os
+from urlparse import urlparse
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
 from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
+# All paths must end with trailing slash
+from utils import is_path_secure
+
 HOSTING__HOME_PATH = "/home/hosting/"
 HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
 HOSTING__UWSGI_PATH = HOSTING__HOME_PATH + ".uwsgi/"
+HOSTING__LOG_RELATIVE_PATH = ".logs/"
+HOSTING__ACCESS_LOG_FILE = "access.log"
+HOSTING__ERROR_LOG_FILE = "error.log"
 
 HOSTING_SERVICE_DEPLOY_IN_PROGRESS = 'D'
 HOSTING_SERVICE_ACTIVE_TEST = 'T'
@@ -33,6 +42,25 @@ HOSTING_ACCOUNT_STATUS_CHOICES = (
     (HOSTING_ACCOUNT_BLOCKED, 'BLOCKED'),
     (HOSTING_ACCOUNT_EXPIRED, 'EXPIRED'),
 )
+
+
+class Domain(models.Model):
+    domain = models.CharField(max_length=255, unique=True)
+    owner = models.ForeignKey(User,
+                              related_name='domains',
+                              on_delete=models.PROTECT)
+
+    def clean(self):
+        netloc = urlparse('http://' + self.domain)[1].lower()
+        if netloc is None or netloc == '':
+            raise ValidationError('Invalid domain: %s' % self.domain)
+
+            # todo: validate netloc
+            # todo: xn-- domains
+            # todo: trailing dot at the end of domain (technically valid)
+
+    def __unicode__(self):
+        return self.domain
 
 
 class DjangoHostingTariff(models.Model):
@@ -82,10 +110,18 @@ class DjangoHostingService(models.Model):
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
                               default=HOSTING_SERVICE_DEPLOY_IN_PROGRESS)
     created_at = models.DateTimeField(auto_now_add=True)
+    domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
+
+    django_static_path = models.CharField(max_length=255, default='static',
+                                          null=True, blank=True)
+    django_static_url = models.CharField(max_length=255, default='/static/',
+                                         null=True, blank=True)
+    django_media_path = models.CharField(max_length=255, default='media',
+                                         null=True, blank=True)
+    django_media_url = models.CharField(max_length=255, default='/media/',
+                                        null=True, blank=True)
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         if not self.server.is_python_version_supported(self.python_version):
             raise ValidationError(
                 '%s does not support %s' % (self.server, self.python_version)
@@ -100,6 +136,51 @@ class DjangoHostingService(models.Model):
 
         if not self.server.is_published:
             raise ValidationError('%s is not published' % self.server)
+
+        if self.virtualenv_path and not self.virtualenv_path.endswith('/'):
+            raise ValidationError('Virtualenv path must contain '
+                                  'trailing slash')
+
+        if self.home_path and not self.home_path.endswith('/'):
+            raise ValidationError('Home path must contain trailing slash')
+
+        if self.django_static_path is not None:
+            if not is_path_secure(self.django_static_path):
+                raise ValidationError(
+                    'Django static path must be absolute and '
+                    'contain only these characters: a-zA-Z0-9-_./'
+                )
+
+        if self.django_media_path is not None:
+            if not is_path_secure(self.django_media_path):
+                raise ValidationError(
+                    'Django media path must be absolute and '
+                    'contain only these characters: a-zA-Z0-9-_./'
+                )
+
+        if self.django_static_url is not None:
+            if not self.django_static_url.startswith('/') or \
+                    not self.django_static_url.endswith('/'):
+                raise ValidationError(
+                    'Django static url must begin and end with a slash'
+                )
+            if not is_path_secure(self.django_static_url):
+                raise ValidationError(
+                    'Django static url must be absolute and '
+                    'contain only these characters: a-zA-Z0-9-_./'
+                )
+
+        if self.django_media_url is not None:
+            if not self.django_media_url.startswith('/') or \
+                    not self.django_media_url.endswith('/'):
+                raise ValidationError(
+                    'Django media url must begin and end with a slash'
+                )
+            if not is_path_secure(self.django_media_url):
+                raise ValidationError(
+                    'Django media url must be absolute and '
+                    'contain only these characters: a-zA-Z0-9-_./'
+                )
 
     def __unicode__(self):
         def get_status(status):
@@ -117,6 +198,26 @@ class DjangoHostingService(models.Model):
         s = "[%s] %s %s at %s" % (get_status(self.status), self.pk,
                                   self.account, self.server.hostname)
         return s
+
+    def get_access_log_path(self):
+        return "%s%s%s" % (
+            self.home_path,
+            HOSTING__LOG_RELATIVE_PATH,
+            HOSTING__ACCESS_LOG_FILE
+        )
+
+    def get_error_log_path(self):
+        return "%s%s%s" % (
+            self.home_path,
+            HOSTING__LOG_RELATIVE_PATH,
+            HOSTING__ERROR_LOG_FILE
+        )
+
+    def get_django_static_path(self):
+        return os.path.join(self.home_path, self.django_static_path)
+
+    def get_django_media_path(self):
+        return os.path.join(self.home_path, self.django_media_path)
 
 
 @receiver(signals.post_save, sender=DjangoHostingService)

@@ -1,7 +1,9 @@
 import datetime
 from django.contrib.auth.models import User
-from backend.tests.fixtures import create_python_version, create_django_version, create_django_hosting_server
-from hosting.models import DjangoHostingAccount, DjangoHostingTariff, DjangoHostingService
+from backend.tests.fixtures import create_python_version, \
+    create_django_version, create_django_hosting_server
+from hosting.models import DjangoHostingAccount, DjangoHostingTariff, \
+    DjangoHostingService, Domain
 
 
 def create_client(email="test@test.ru", is_active=True, first_name='Test',
@@ -26,7 +28,8 @@ def create_django_hosting_tariff(name="Django fake tariff", is_published=True,
         ram_per_process=64,
         file_descriptors_per_process=100,
         vhost_count=vhost_count,
-        has_backup=has_backup
+        has_backup=has_backup,
+        workers_per_host=2
     )
 
 
@@ -50,11 +53,25 @@ def create_django_hosting_account(tariff=None, client=None, start_at=None,
     )
 
 
+def create_domain(domain=None, owner=None):
+    import uuid
+
+    uid = uuid.uuid4()
+    if domain is None:
+        domain = "test-%s" % uid.hex
+
+    if owner is None:
+        owner = create_client()
+
+    d = Domain.objects.create(domain=domain, owner=owner)
+    return d
+
+
 def create_django_hosting_service(account=None, python_version=None,
                                   django_version=None, server=None,
                                   virtualenv_path="/.virtualenvs/10001",
                                   home_path="/.hosting/10001",
-                                  status='T'):
+                                  status='T', domain=None):
     if account is None:
         account = create_django_hosting_account()
     if python_version is None:
@@ -67,6 +84,8 @@ def create_django_hosting_service(account=None, python_version=None,
         server = create_django_hosting_server(supported_python_versions=[
             python_version
         ])
+    if domain is None:
+        domain = create_domain(owner=account.client)
 
     return DjangoHostingService.objects.create(
         account=account,
@@ -75,6 +94,7 @@ def create_django_hosting_service(account=None, python_version=None,
         virtualenv_path=virtualenv_path,
         home_path=home_path,
         server=server,
-        status=status
+        status=status,
+        domain=domain,
     )
 

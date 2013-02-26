@@ -1,13 +1,18 @@
 <component name="ProjectDictionaryState">
   <dictionary name="ender">
     <words>
+      <w>chdir</w>
       <w>clickjacking</w>
       <w>csrf</w>
       <w>django's</w>
       <w>djcelery</w>
       <w>github</w>
+      <w>harakiri</w>
       <w>inode</w>
       <w>middleware</w>
+      <w>nginx</w>
+      <w>nproc</w>
+      <w>nserver</w>
       <w>testovich</w>
       <w>uwsgi</w>
       <w>venv</w>
