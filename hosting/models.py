@@ -12,7 +12,8 @@ from utils import is_path_secure
 
 HOSTING__HOME_PATH = "/home/hosting/"
 HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
-HOSTING__UWSGI_PATH = HOSTING__HOME_PATH + ".uwsgi/"
+HOSTING__UWSGI_CONFIG_PATH = HOSTING__HOME_PATH + ".uwsgi/"
+HOSTING__NGINX_CONFIG_PATH = HOSTING__HOME_PATH + ".nginx/"
 HOSTING__LOG_RELATIVE_PATH = ".logs/"
 HOSTING__ACCESS_LOG_FILE = "access.log"
 HOSTING__ERROR_LOG_FILE = "error.log"
@@ -199,14 +200,14 @@ class DjangoHostingService(models.Model):
                                   self.account, self.server.hostname)
         return s
 
-    def get_access_log_path(self):
+    def get_access_log_file(self):
         return "%s%s%s" % (
             self.home_path,
             HOSTING__LOG_RELATIVE_PATH,
             HOSTING__ACCESS_LOG_FILE
         )
 
-    def get_error_log_path(self):
+    def get_error_log_file(self):
         return "%s%s%s" % (
             self.home_path,
             HOSTING__LOG_RELATIVE_PATH,
@@ -219,14 +220,17 @@ class DjangoHostingService(models.Model):
     def get_django_media_path(self):
         return os.path.join(self.home_path, self.django_media_path)
 
+    def is_deployed(self):
+        return self.status != HOSTING_SERVICE_DEPLOY_IN_PROGRESS
+
 
 @receiver(signals.post_save, sender=DjangoHostingService)
 def populate_django_hosting_service_virtualenv_and_path(sender, instance,
                                                         **kwargs):
     if not instance.virtualenv_path or not instance.home_path:
-        instance.virtualenv_path = "%s%s" % (HOSTING__VIRTUALENVS_PATH,
-                                             instance.pk)
-        instance.home_path = "%s%s" % (HOSTING__HOME_PATH, instance.pk)
+        instance.virtualenv_path = "%s%s/" % (HOSTING__VIRTUALENVS_PATH,
+                                              instance.pk)
+        instance.home_path = "%s%s/" % (HOSTING__HOME_PATH, instance.pk)
         instance.save()
 
 
@@ -249,3 +253,10 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
             if service.status != instance.status:
                 service.status = instance.status
                 service.save()
+
+
+@receiver(signals.post_save, sender=DjangoHostingService)
+def enqueue_deploy_django_hosting_service(sender, instance, **kwargs):
+    from tasks import deploy_django_hosting_service
+
+    deploy_django_hosting_service.delay(instance, countdown=10)
