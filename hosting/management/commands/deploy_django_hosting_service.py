@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from hosting.models import DjangoHostingService
+from hosting.tasks import deploy_django_hosting_service
 
 
 class Command(BaseCommand):
@@ -13,6 +14,7 @@ class Command(BaseCommand):
                 if service.is_deployed():
                     raise CommandError('DjangoHostingService "%s" '
                                        'already deployed' % service_id)
+                deploy_django_hosting_service.delay(service)
             except DjangoHostingService.DoesNotExist:
                 raise CommandError('DjangoHostingService "%s" does not exist' %
                                    service_id)
