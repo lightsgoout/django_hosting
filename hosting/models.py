@@ -94,7 +94,7 @@ class DjangoHostingAccount(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return '%s\'s %s' % (self.client, self.tariff)
+        return u'%s\'s %s' % (self.client, self.tariff)
 
 
 class DjangoHostingService(models.Model):
@@ -186,18 +186,18 @@ class DjangoHostingService(models.Model):
     def __unicode__(self):
         def get_status(status):
             if status == HOSTING_SERVICE_ACTIVE:
-                return 'ACTIVE'
+                return u'ACTIVE'
             if status == HOSTING_SERVICE_DEPLOY_IN_PROGRESS:
-                return 'DEPLOY_IN_PROGRESS'
+                return u'DEPLOY_IN_PROGRESS'
             if status == HOSTING_SERVICE_ACTIVE_TEST:
-                return 'ACTIVE_TEST'
+                return u'ACTIVE_TEST'
             if status == HOSTING_ACCOUNT_BLOCKED:
-                return 'BLOCKED'
+                return u'BLOCKED'
             if status == HOSTING_ACCOUNT_EXPIRED:
-                return 'EXPIRED'
+                return u'EXPIRED'
 
-        s = "[%s] %s %s at %s" % (get_status(self.status), self.pk,
-                                  self.account, self.server.hostname)
+        s = u"[%s] %s %s at %s" % (get_status(self.status), self.pk,
+                                   self.account, self.server.hostname)
         return s
 
     def get_access_log_file(self):
