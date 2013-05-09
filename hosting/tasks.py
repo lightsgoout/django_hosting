@@ -80,7 +80,7 @@ def create_django_uwsgi_config(service, *args, **kwargs):
     config += "virtualenv = %s%%n\n" % HOSTING__VIRTUALENVS_PATH
     #config += "env = DJANGO_SETTINGS_MODULE=%n.settings\n"
     #config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
-    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.pk)
+    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 
@@ -96,7 +96,7 @@ def create_nginx_config(service, *args, **kwargs):
     config += "\terror_log %s;\n" % service.get_error_log_file()
     config += "\n"
     config += "\tlocation / {\n"
-    config += "\t\tuwsgi_pass unix:/tmp/%s.sock;\n" % service.pk
+    config += "\t\tuwsgi_pass unix:/tmp/%s.sock;\n" % service.get_id()
     config += "\t\tinclude /etc/nginx/uwsgi_params;\n"
     config += "\t}\n"
     config += "\n"
@@ -110,7 +110,7 @@ def create_nginx_config(service, *args, **kwargs):
         config += "\t}\n"
     config += "}\n"
 
-    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.pk)
+    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 

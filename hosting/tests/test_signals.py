@@ -74,9 +74,9 @@ class TestSignals(TestCase):
         )
         self.assertEqual(
             service.virtualenv_path,
-            "%s%s" % (HOSTING__VIRTUALENVS_PATH, service.pk)
+            "%s%s/" % (HOSTING__VIRTUALENVS_PATH, service.get_id())
         )
         self.assertEqual(
             service.home_path,
-            "%s%s" % (HOSTING__HOME_PATH, service.pk)
+            "%s%s/" % (HOSTING__HOME_PATH, service.get_id())
         )

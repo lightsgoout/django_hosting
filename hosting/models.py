@@ -45,6 +45,20 @@ HOSTING_ACCOUNT_STATUS_CHOICES = (
 )
 
 
+class AbstractHostingService(models.Model):
+    class Meta:
+        abstract = True
+
+    def get_service_type(self):
+        """
+        Must be implemented in derived classes
+        """
+        raise NotImplementedError
+
+    def get_id(self):
+        return u"%s%s" % (self.get_service_type(), self.pk)
+
+
 class Domain(models.Model):
     domain = models.CharField(max_length=255, unique=True)
     owner = models.ForeignKey(User,
@@ -97,7 +111,7 @@ class DjangoHostingAccount(models.Model):
         return u'%s\'s %s' % (self.client, self.tariff)
 
 
-class DjangoHostingService(models.Model):
+class DjangoHostingService(AbstractHostingService):
     account = models.ForeignKey(DjangoHostingAccount,
                                 related_name='hosting_services')
     python_version = models.ForeignKey(PythonVersion, on_delete=models.PROTECT)
@@ -223,14 +237,17 @@ class DjangoHostingService(models.Model):
     def is_deployed(self):
         return self.status != HOSTING_SERVICE_DEPLOY_IN_PROGRESS
 
+    def get_service_type(self):
+        return 'django'
+
 
 @receiver(signals.post_save, sender=DjangoHostingService)
 def populate_django_hosting_service_virtualenv_and_path(sender, instance,
                                                         **kwargs):
     if not instance.virtualenv_path or not instance.home_path:
         instance.virtualenv_path = "%s%s/" % (HOSTING__VIRTUALENVS_PATH,
-                                              instance.pk)
-        instance.home_path = "%s%s/" % (HOSTING__HOME_PATH, instance.pk)
+                                              instance.get_id())
+        instance.home_path = "%s%s/" % (HOSTING__HOME_PATH, instance.get_id())
         instance.save()
 
 
