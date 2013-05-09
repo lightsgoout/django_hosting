@@ -1,5 +1,6 @@
 import datetime
 from django.contrib.auth.models import User
+from django.test.utils import override_settings
 from backend.tests.fixtures import create_python_version, \
     create_django_version, create_django_hosting_server
 from hosting.models import DjangoHostingAccount, DjangoHostingTariff, \
@@ -67,6 +68,8 @@ def create_domain(domain=None, owner=None):
     return d
 
 
+@override_settings(BROKER_BACKEND='memory')
+@override_settings(BROKER_URL='')
 def create_django_hosting_service(account=None, python_version=None,
                                   django_version=None, server=None,
                                   virtualenv_path="/.virtualenvs/10001",
