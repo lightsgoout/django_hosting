@@ -17,6 +17,9 @@ S__NGINX = 'Creating nginx config'
 
 @task()
 def deploy_django_hosting_service(service):
+    """
+    @type service DjangoHostingService
+    """
     c = chain(
         create_hosting_home_dir.s(service),
         create_hosting_log_dir.s(service),
@@ -29,6 +32,9 @@ def deploy_django_hosting_service(service):
 
 @task()
 def create_hosting_home_dir(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
     try:
         mkdir(service.home_path, mode=0770)
     except OSError as exc:
@@ -42,6 +48,9 @@ def create_hosting_home_dir(service, *args, **kwargs):
 
 @task()
 def create_hosting_log_dir(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
     log_dir = "%s%s" % (service.home_path, HOSTING__LOG_RELATIVE_PATH)
     try:
         mkdir(log_dir, mode=0770)
@@ -56,6 +65,9 @@ def create_hosting_log_dir(service, *args, **kwargs):
 
 @task()
 def create_hosting_virtualenv(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
     try:
         mkdir(service.virtualenv_path, mode=0770)
     except OSError as exc:
@@ -69,17 +81,27 @@ def create_hosting_virtualenv(service, *args, **kwargs):
 
 @task()
 def create_django_uwsgi_config(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
     config = "[uwsgi]\n"
-    config += "chdir = %s%%n\n" % HOSTING__HOME_PATH
-    config += "workers = %d\n" % service.account.tariff.workers_per_host
-    config += "harakiri = %d\n" % service.account.tariff.cpu_per_process
-    config += "limit-as = %d\n" % service.account.tariff.ram_per_process
-    config += "limit-nproc = 0\n"
-    config += "master = false\n"
-    config += "socket = /tmp/%n.sock\n"
-    config += "virtualenv = %s%%n\n" % HOSTING__VIRTUALENVS_PATH
-    #config += "env = DJANGO_SETTINGS_MODULE=%n.settings\n"
-    #config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
+    config += "protocol = uwsgi\n"
+    config += "master = true\n"
+    config += "processes = %s\n" % service.server.core_count
+    config += "socket = /tmp/%s.sock\n" % service.get_id()
+    config += "chmod-socket = 666\n"
+    config += "vhost = true\n"
+    config += "no-site = true\n"
+    config += "uid = %s\n" % service.get_www_user()
+    config += "gid = %s\n" % service.get_www_group()
+    config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
+    config += "env = DJANGO_SETTINGS_MODULE=%s\n" % service.get_settings()
+    config += "virtualenv = %s%s\n" % (
+    HOSTING__VIRTUALENVS_PATH, service.get_id())
+    config += "chdir = %s%s\n" % (HOSTING__HOME_PATH, service.get_id())
+
+    # todo: add pythonpath
+
     config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
     with open(config_path, 'w') as config_file:
         config_file.write(config)
@@ -89,6 +111,9 @@ def create_django_uwsgi_config(service, *args, **kwargs):
 
 @task()
 def create_nginx_config(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
     config = "server {\n"
     config += "\tlisten 80;\n"
     config += "\tserver_name %s;\n" % service.domain
