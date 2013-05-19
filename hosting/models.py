@@ -136,6 +136,8 @@ class DjangoHostingService(AbstractHostingService):
     django_media_url = models.CharField(max_length=255, default='/media/',
                                         null=True, blank=True)
 
+    settings_module = models.CharField(max_length=255, default='settings')
+
     def clean(self):
         if not self.server.is_python_version_supported(self.python_version):
             raise ValidationError(
@@ -239,6 +241,12 @@ class DjangoHostingService(AbstractHostingService):
 
     def get_service_type(self):
         return 'django'
+
+    def get_www_user(self):
+        return 'www-%s' % self.get_id()
+
+    def get_www_group(self):
+        return self.get_www_user()
 
 
 @receiver(signals.post_save, sender=DjangoHostingService)

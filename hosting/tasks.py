@@ -16,7 +16,7 @@ S__NGINX = 'Creating nginx config'
 
 
 @task()
-def deploy_django_hosting_service(service):
+def deploy_django_hosting_service(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
@@ -36,14 +36,14 @@ def create_hosting_home_dir(service, *args, **kwargs):
     @type service DjangoHostingService
     """
     try:
-        mkdir(service.home_path, mode=0770)
+        mkdir(service.home_path, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-            chmod(service.home_path, mode=0770)
+            chmod(service.home_path, 0770)
         else:
             raise
 
-    return S__HOME_DIR
+    return service
 
 
 @task()
@@ -53,14 +53,14 @@ def create_hosting_log_dir(service, *args, **kwargs):
     """
     log_dir = "%s%s" % (service.home_path, HOSTING__LOG_RELATIVE_PATH)
     try:
-        mkdir(log_dir, mode=0770)
+        mkdir(log_dir, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(log_dir):
-            chmod(log_dir, mode=0770)
+            chmod(log_dir, 0770)
         else:
             raise
 
-    return S__LOG_DIR
+    return service
 
 
 @task()
@@ -69,14 +69,14 @@ def create_hosting_virtualenv(service, *args, **kwargs):
     @type service DjangoHostingService
     """
     try:
-        mkdir(service.virtualenv_path, mode=0770)
+        mkdir(service.virtualenv_path, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-            chmod(service.virtualenv_path, mode=0770)
+            chmod(service.virtualenv_path, 0770)
         else:
             raise
 
-    return S__VIRTUALENV
+    return service
 
 
 @task()
@@ -95,9 +95,10 @@ def create_django_uwsgi_config(service, *args, **kwargs):
     config += "uid = %s\n" % service.get_www_user()
     config += "gid = %s\n" % service.get_www_group()
     config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
-    config += "env = DJANGO_SETTINGS_MODULE=%s\n" % service.get_settings()
+    config += "env = DJANGO_SETTINGS_MODULE=%s\n" % service.settings_module
     config += "virtualenv = %s%s\n" % (
-    HOSTING__VIRTUALENVS_PATH, service.get_id())
+        HOSTING__VIRTUALENVS_PATH, service.get_id()
+    )
     config += "chdir = %s%s\n" % (HOSTING__HOME_PATH, service.get_id())
 
     # todo: add pythonpath
@@ -106,7 +107,7 @@ def create_django_uwsgi_config(service, *args, **kwargs):
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 
-    return S__UWSGI
+    return service
 
 
 @task()
@@ -139,4 +140,4 @@ def create_nginx_config(service, *args, **kwargs):
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 
-    return S__NGINX
+    return service
