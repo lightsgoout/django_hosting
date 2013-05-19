@@ -10,6 +10,9 @@ from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 # All paths must end with trailing slash
 from utils import is_path_secure, is_valid_python_module
 
+HOSTING__NGINX_USER = "www-data"
+HOSTING__NGINX_GROUP = "www-data"
+
 HOSTING__HOME_PATH = "/home/hosting/"
 HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
 HOSTING__UWSGI_CONFIG_PATH = HOSTING__HOME_PATH + ".uwsgi/"

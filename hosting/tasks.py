@@ -5,7 +5,8 @@ from celery import task, chain
 from celery.utils.log import get_task_logger
 
 from hosting.models import HOSTING__HOME_PATH, HOSTING__VIRTUALENVS_PATH, \
-    HOSTING__LOG_RELATIVE_PATH, HOSTING__NGINX_CONFIG_PATH
+    HOSTING__LOG_RELATIVE_PATH, HOSTING__NGINX_CONFIG_PATH, \
+    HOSTING__NGINX_GROUP
 
 logger = get_task_logger(__name__)
 
@@ -18,7 +19,8 @@ def deploy_django_hosting_service(service, *args, **kwargs):
 
     c = chain(
         create_hosting_www_user.s(service),
-        create_hosting_home_dir.s(service),
+        add_nginx_to_user_group.s(service),
+        #create_hosting_home_dir.s(service),
         create_hosting_log_dir.s(service),
         create_hosting_virtualenv.s(service),
         create_django_uwsgi_config.s(service),
@@ -44,20 +46,35 @@ def create_hosting_www_user(service, *args, **kwargs):
 
 
 @task()
-def create_hosting_home_dir(service, *args, **kwargs):
+def add_nginx_to_user_group(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
-    logger.info('[%s] Creating hosting home dir...' % service.get_id())
-    try:
-        os.mkdir(service.home_path, 0770)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-            os.chmod(service.home_path, 0770)
-        else:
-            raise
-
+    logger.info('[%s] Adding nginx to user group...' % service.get_id())
+    os.system(
+        'sudo usermod -a -G %s %s' % (
+            service.get_www_group(),
+            HOSTING__NGINX_GROUP
+        )
+    )
     return service
+
+#
+# @task()
+# def create_hosting_home_dir(service, *args, **kwargs):
+#     """
+#     @type service DjangoHostingService
+#     """
+#     logger.info('[%s] Creating hosting home dir...' % service.get_id())
+#     try:
+#         os.mkdir(service.home_path, 0770)
+#     except OSError as exc:
+#         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
+#             os.chmod(service.home_path, 0770)
+#         else:
+#             raise
+#
+#     return service
 
 
 @task()
