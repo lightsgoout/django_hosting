@@ -121,6 +121,45 @@ class TestDjangoHostingService(TestCase):
         self.service.django_media_url = '/$asd/'
         self.service.full_clean()
 
+    @raises(ValidationError)
+    def test_invalid_settings_module(self):
+        """
+        Test settings module validation
+        """
+        self.service.settings_module = '../../settings.py'
+        self.service.full_clean()
+
+    def test_valid_settings_module(self):
+        """
+        Test valid settings cases
+        """
+        self.service.settings_module = 'settings'
+        self.service.full_clean()
+        self.service.settings_module = 'settings.py'
+        self.service.full_clean()
+        self.service.settings_module = 'settings.production'
+        self.service.full_clean()
+
+    @raises(ValidationError)
+    def test_invalid_wsgi_module(self):
+        """
+        Test wsgi module validation
+        """
+        self.service.wsgi_module = '../../wsgi.py'
+        self.service.full_clean()
+
+    def test_valid_wsgi_module(self):
+        """
+        Test valid wsgi cases
+        """
+        self.service.wsgi_module = 'wsgi'
+        self.service.full_clean()
+        self.service.wsgi_module = 'wsgi.py'
+        self.service.full_clean()
+        self.service.wsgi_module = 'deploy.wsgi'
+        self.service.full_clean()
+
+
 
 
 

@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from backend.models import DjangoVersion, PythonVersion, DjangoHostingServer
 
 # All paths must end with trailing slash
-from utils import is_path_secure
+from utils import is_path_secure, is_valid_python_module
 
 HOSTING__HOME_PATH = "/home/hosting/"
 HOSTING__VIRTUALENVS_PATH = HOSTING__HOME_PATH + ".virtualenvs/"
@@ -137,6 +137,7 @@ class DjangoHostingService(AbstractHostingService):
                                         null=True, blank=True)
 
     settings_module = models.CharField(max_length=255, default='settings')
+    wsgi_module = models.CharField(max_length=255, null=True, blank=True)
 
     def clean(self):
         if not self.server.is_python_version_supported(self.python_version):
@@ -197,6 +198,18 @@ class DjangoHostingService(AbstractHostingService):
                 raise ValidationError(
                     'Django media url must be absolute and '
                     'contain only these characters: a-zA-Z0-9-_./'
+                )
+
+        if self.settings_module is not None:
+            if not is_valid_python_module(self.settings_module):
+                raise ValidationError(
+                    'Invalid python module: %s' % self.settings_module
+                )
+
+        if self.wsgi_module is not None:
+            if not is_valid_python_module(self.wsgi_module):
+                raise ValidationError(
+                    'Invalid python module: %s' % self.wsgi_module
                 )
 
     def __unicode__(self):
