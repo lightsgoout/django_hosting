@@ -1,18 +1,13 @@
-from os import mkdir
 import os
 import errno
 
 from celery import task, chain
-from setuptools.command.easy_install import chmod
+from celery.utils.log import get_task_logger
 
 from hosting.models import HOSTING__HOME_PATH, HOSTING__VIRTUALENVS_PATH, \
     HOSTING__LOG_RELATIVE_PATH, HOSTING__NGINX_CONFIG_PATH
 
-S__HOME_DIR = 'Creating home directory'
-S__LOG_DIR = 'Creating log directory'
-S__VIRTUALENV = 'Setting virtualenv up'
-S__UWSGI = 'Creating uWSGI config'
-S__NGINX = 'Creating nginx config'
+logger = get_task_logger(__name__)
 
 
 @task()
@@ -20,6 +15,7 @@ def deploy_django_hosting_service(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+
     c = chain(
         create_hosting_home_dir.s(service),
         create_hosting_log_dir.s(service),
@@ -35,11 +31,12 @@ def create_hosting_home_dir(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+    logger.info('[%s] Creating hosting home dir...' % service.get_id())
     try:
-        mkdir(service.home_path, 0770)
+        os.mkdir(service.home_path, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-            chmod(service.home_path, 0770)
+            os.chmod(service.home_path, 0770)
         else:
             raise
 
@@ -51,12 +48,13 @@ def create_hosting_log_dir(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+    logger.info('[%s] Creating hosting log dir...' % service.get_id())
     log_dir = "%s%s" % (service.home_path, HOSTING__LOG_RELATIVE_PATH)
     try:
-        mkdir(log_dir, 0770)
+        os.mkdir(log_dir, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(log_dir):
-            chmod(log_dir, 0770)
+            os.chmod(log_dir, 0770)
         else:
             raise
 
@@ -68,11 +66,12 @@ def create_hosting_virtualenv(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+    logger.info('[%s] Creating hosting virtualenv...' % service.get_id())
     try:
-        mkdir(service.virtualenv_path, 0770)
+        os.mkdir(service.virtualenv_path, 0770)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-            chmod(service.virtualenv_path, 0770)
+            os.chmod(service.virtualenv_path, 0770)
         else:
             raise
 
@@ -84,6 +83,7 @@ def create_django_uwsgi_config(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+    logger.info('[%s] Creating django uwsgi config...' % service.get_id())
     config = "[uwsgi]\n"
     config += "protocol = uwsgi\n"
     config += "master = true\n"
@@ -115,6 +115,7 @@ def create_nginx_config(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
+    logger.info('[%s] Creating nginx config...' % service.get_id())
     config = "server {\n"
     config += "\tlisten 80;\n"
     config += "\tserver_name %s;\n" % service.domain
