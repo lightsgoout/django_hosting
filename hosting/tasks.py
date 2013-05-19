@@ -175,7 +175,11 @@ def create_nginx_config(service, *args, **kwargs):
         config += "\t}\n"
     config += "}\n"
 
-    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
+    config_path = "%s%s/%s.conf" % (
+        HOSTING__NGINX_CONFIG_PATH,
+        service.python_version.major_version,
+        service.get_id()
+    )
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 
