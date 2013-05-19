@@ -11,9 +11,12 @@
       <w>inode</w>
       <w>middleware</w>
       <w>nginx</w>
+      <w>nologin</w>
       <w>nproc</w>
       <w>nserver</w>
+      <w>sbin</w>
       <w>testovich</w>
+      <w>useradd</w>
       <w>uwsgi</w>
       <w>venv</w>
       <w>vhost</w>
