@@ -94,7 +94,10 @@ def create_django_uwsgi_config(service, *args, **kwargs):
     config += "no-site = true\n"
     config += "uid = %s\n" % service.get_www_user()
     config += "gid = %s\n" % service.get_www_group()
-    config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
+    if service.wsgi_module is not None:
+        config += "module = %s\n" % service.wsgi_module
+    else:
+        config += "module = django.core.handlers.wsgi:WSGIHandler()\n"
     config += "env = DJANGO_SETTINGS_MODULE=%s\n" % service.settings_module
     config += "virtualenv = %s%s\n" % (
         HOSTING__VIRTUALENVS_PATH, service.get_id()
