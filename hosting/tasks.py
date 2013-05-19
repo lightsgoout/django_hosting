@@ -17,6 +17,7 @@ def deploy_django_hosting_service(service, *args, **kwargs):
     """
 
     c = chain(
+        create_hosting_www_user.s(service),
         create_hosting_home_dir.s(service),
         create_hosting_log_dir.s(service),
         create_hosting_virtualenv.s(service),
@@ -24,6 +25,22 @@ def deploy_django_hosting_service(service, *args, **kwargs):
         create_nginx_config.s(service),
     )
     c()
+
+
+@task()
+def create_hosting_www_user(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
+    logger.info('[%s] Creating hosting www user...' % service.get_id())
+    os.system(
+        'sudo useradd --home-dir %s --shell /usr/sbin/nologin --gid %s %s' % (
+            service.home_path,
+            service.get_www_group(),
+            service.get_www_user()
+        )
+    )
+    return service
 
 
 @task()
