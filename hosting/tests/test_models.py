@@ -159,6 +159,23 @@ class TestDjangoHostingService(TestCase):
         self.service.wsgi_module = 'deploy.wsgi'
         self.service.full_clean()
 
+    @raises(ValidationError)
+    def test_invalid_requirements_file(self):
+        """
+        Test requirements file validation
+        """
+        self.service.requirements_file = '../requirements.txt'
+        self.service.full_clean()
+
+    def test_valid_requirements_cases(self):
+        """
+        Test valid requirements cases
+        """
+        self.service.requirements_file = 'requirements.txt'
+        self.service.full_clean()
+        self.service.requirements_file = 'deploy/requirements.txt'
+        self.service.full_clean()
+
 
 
 

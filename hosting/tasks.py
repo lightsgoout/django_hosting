@@ -25,6 +25,7 @@ def deploy_django_hosting_service(service, *args, **kwargs):
         create_hosting_virtualenv.s(service),
         create_django_uwsgi_config.s(service),
         create_nginx_config.s(service),
+        install_requirements.s(service),
     )
     c()
 
@@ -177,5 +178,24 @@ def create_nginx_config(service, *args, **kwargs):
     config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
     with open(config_path, 'w') as config_file:
         config_file.write(config)
+
+    return service
+
+
+@task()
+def install_requirements(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
+    if service.requirements_file is not None:
+        logger.info(
+            "Installing requirements file: %s ..." % service.requirements_file
+        )
+        os.system(
+            'sudo workon %s && pip install -r %s' % (
+                service.get_id(),
+                service.requirements_file
+            )
+        )
 
     return service

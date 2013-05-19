@@ -141,6 +141,7 @@ class DjangoHostingService(AbstractHostingService):
 
     settings_module = models.CharField(max_length=255, default='settings')
     wsgi_module = models.CharField(max_length=255, null=True, blank=True)
+    requirements_file = models.CharField(max_length=255, null=True, blank=True)
 
     def clean(self):
         if not self.server.is_python_version_supported(self.python_version):
@@ -214,6 +215,13 @@ class DjangoHostingService(AbstractHostingService):
                 raise ValidationError(
                     'Invalid python module: %s' % self.wsgi_module
                 )
+
+        if self.requirements_file is not None:
+            if not is_path_secure(self.requirements_file):
+                raise ValidationError(
+                    'Invalid requirements file: %s' % self.requirements_file
+                )
+
 
     def __unicode__(self):
         def get_status(status):
