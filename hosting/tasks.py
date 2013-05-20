@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 
 from hosting.models import HOSTING__HOME_PATH, HOSTING__VIRTUALENVS_PATH, \
     HOSTING__LOG_RELATIVE_PATH, HOSTING__NGINX_CONFIG_PATH, \
-    HOSTING__NGINX_USER
+    HOSTING__NGINX_USER, HOSTING__UWSGI_CONFIG_PATH
 
 logger = get_task_logger(__name__)
 
@@ -140,7 +140,11 @@ def create_django_uwsgi_config(service, *args, **kwargs):
 
     # todo: add pythonpath
 
-    config_path = "%s%s.conf" % (HOSTING__NGINX_CONFIG_PATH, service.get_id())
+    config_path = "%s%s/%s.conf" % (
+        HOSTING__UWSGI_CONFIG_PATH,
+        service.python_version.major_version,
+        service.get_id()
+    )
     with open(config_path, 'w') as config_file:
         config_file.write(config)
 
@@ -174,9 +178,8 @@ def create_nginx_config(service, *args, **kwargs):
         config += "\t}\n"
     config += "}\n"
 
-    config_path = "%s%s/%s.conf" % (
+    config_path = "%s%s.conf" % (
         HOSTING__NGINX_CONFIG_PATH,
-        service.python_version.major_version,
         service.get_id()
     )
     with open(config_path, 'w') as config_file:
