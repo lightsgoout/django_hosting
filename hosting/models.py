@@ -271,6 +271,11 @@ class DjangoHostingService(AbstractHostingService):
     def get_www_group(self):
         return self.get_www_user()
 
+    def is_ready_to_deploy(self):
+        if self.virtualenv_path and self.home_path:
+            return True
+        return False
+
 
 @receiver(signals.post_save, sender=DjangoHostingService)
 def populate_django_hosting_service_virtualenv_and_path(sender, instance,
@@ -308,8 +313,9 @@ def enqueue_deploy_django_hosting_service(sender, instance, **kwargs):
     """
     @type instance DjangoHostingService
     """
-    from tasks import deploy_django_hosting_service
+    if instance.is_ready_to_deploy():
+        from tasks import deploy_django_hosting_service
 
-    deploy_django_hosting_service.apply_async(
-        (instance,)
-    )
+        deploy_django_hosting_service.apply_async(
+            (instance,)
+        )
