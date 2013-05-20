@@ -1,7 +1,6 @@
 from django.test import TestCase
 from hosting.models import DjangoHostingService, HOSTING_ACCOUNT_BLOCKED, \
-    HOSTING_SERVICE_DEPLOY_IN_PROGRESS, HOSTING_ACCOUNT_ACTIVE, \
-    HOSTING__VIRTUALENVS_PATH, HOSTING__HOME_PATH
+    HOSTING_SERVICE_DEPLOY_IN_PROGRESS, HOSTING_ACCOUNT_ACTIVE
 from hosting.tests import fixtures
 
 
@@ -20,16 +19,12 @@ class TestSignals(TestCase):
             account=account,
             python_version=python_version,
             django_version=django_version,
-            virtualenv_path='test1',
-            home_path='test1',
             server=django_server,
         )
         fixtures.create_django_hosting_service(
             account=account,
             python_version=python_version,
             django_version=django_version,
-            virtualenv_path='test2',
-            home_path='test2',
             server=django_server,
         )
         return account
@@ -63,20 +58,4 @@ class TestSignals(TestCase):
         for service in DjangoHostingService.objects.filter(account=account):
             self.assertEqual(account.status, service.status)
 
-    def test_auto_populate_virtualenv_and_home_path(self):
-        """
-        Ensure service's virtualenv_path and home_path is auto-populated
-        based on PK.
-        """
-        service = fixtures.create_django_hosting_service(
-            virtualenv_path=None,
-            home_path=None,
-        )
-        self.assertEqual(
-            service.virtualenv_path,
-            "%s%s/" % (HOSTING__VIRTUALENVS_PATH, service.get_id())
-        )
-        self.assertEqual(
-            service.home_path,
-            "%s%s/" % (HOSTING__HOME_PATH, service.get_id())
-        )
+

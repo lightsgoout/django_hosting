@@ -119,10 +119,6 @@ class DjangoHostingService(AbstractHostingService):
                                 related_name='hosting_services')
     python_version = models.ForeignKey(PythonVersion, on_delete=models.PROTECT)
     django_version = models.ForeignKey(DjangoVersion, on_delete=models.PROTECT)
-    virtualenv_path = models.CharField(max_length=255, unique=True, blank=True,
-                                       null=True)
-    home_path = models.CharField(max_length=255, unique=True, blank=True,
-                                 null=True)
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
@@ -158,13 +154,6 @@ class DjangoHostingService(AbstractHostingService):
 
         if not self.server.is_published:
             raise ValidationError('%s is not published' % self.server)
-
-        if self.virtualenv_path and not self.virtualenv_path.endswith('/'):
-            raise ValidationError('Virtualenv path must contain '
-                                  'trailing slash')
-
-        if self.home_path and not self.home_path.endswith('/'):
-            raise ValidationError('Home path must contain trailing slash')
 
         if self.django_static_path is not None:
             if not is_path_secure(self.django_static_path):
@@ -272,19 +261,13 @@ class DjangoHostingService(AbstractHostingService):
         return self.get_www_user()
 
     def is_ready_to_deploy(self):
-        if self.virtualenv_path and self.home_path:
-            return True
-        return False
+        return True
 
+    def get_home_path(self):
+        return "%s%s/" % (HOSTING__VIRTUALENVS_PATH, self.get_id())
 
-@receiver(signals.post_save, sender=DjangoHostingService)
-def populate_django_hosting_service_virtualenv_and_path(sender, instance,
-                                                        **kwargs):
-    if not instance.virtualenv_path or not instance.home_path:
-        instance.virtualenv_path = "%s%s/" % (HOSTING__VIRTUALENVS_PATH,
-                                              instance.get_id())
-        instance.home_path = "%s%s/" % (HOSTING__HOME_PATH, instance.get_id())
-        instance.save()
+    def get_virtualenv_path(self):
+        return "%s%s/" % (HOSTING__VIRTUALENVS_PATH, self.get_id())
 
 
 @receiver(signals.post_save, sender=DjangoHostingAccount)

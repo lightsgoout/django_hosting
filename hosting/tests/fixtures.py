@@ -72,8 +72,6 @@ def create_domain(domain=None, owner=None):
 @override_settings(BROKER_URL='')
 def create_django_hosting_service(account=None, python_version=None,
                                   django_version=None, server=None,
-                                  virtualenv_path="/.virtualenvs/10001/",
-                                  home_path="/.hosting/10001/",
                                   status='T', domain=None):
     if account is None:
         account = create_django_hosting_account()
@@ -94,8 +92,6 @@ def create_django_hosting_service(account=None, python_version=None,
         account=account,
         python_version=python_version,
         django_version=django_version,
-        virtualenv_path=virtualenv_path,
-        home_path=home_path,
         server=server,
         status=status,
         domain=domain,

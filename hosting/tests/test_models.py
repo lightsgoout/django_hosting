@@ -42,22 +42,6 @@ class TestDjangoHostingService(TestCase):
         self.service.full_clean()
 
     @raises(ValidationError)
-    def test_virtualenv_trailing_slash(self):
-        """
-        Ensure that virtualenv_path contains trailing slash
-        """
-        self.service.virtualenv_path = "/test"
-        self.service.full_clean()
-
-    @raises(ValidationError)
-    def test_home_path_trailing_slash(self):
-        """
-        Ensure that home_path contains trailing slash
-        """
-        self.service.home_path = "/test"
-        self.service.full_clean()
-
-    @raises(ValidationError)
     def test_secure_django_static_path_absolute_path(self):
         """
         Ensure that relative django static path is not permitted
