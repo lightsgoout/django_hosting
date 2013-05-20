@@ -204,19 +204,19 @@ class DjangoHostingService(AbstractHostingService):
                     'contain only these characters: a-zA-Z0-9-_./'
                 )
 
-        if self.settings_module is not None:
+        if self.settings_module:
             if not is_valid_python_module(self.settings_module):
                 raise ValidationError(
                     'Invalid python module: %s' % self.settings_module
                 )
 
-        if self.wsgi_module is not None:
+        if self.wsgi_module:
             if not is_valid_python_module(self.wsgi_module):
                 raise ValidationError(
                     'Invalid python module: %s' % self.wsgi_module
                 )
 
-        if self.requirements_file is not None:
+        if self.requirements_file:
             if not is_path_secure(self.requirements_file):
                 raise ValidationError(
                     'Invalid requirements file: %s' % self.requirements_file
