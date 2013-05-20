@@ -100,4 +100,3 @@ def create_django_hosting_service(account=None, python_version=None,
         status=status,
         domain=domain,
     )
-

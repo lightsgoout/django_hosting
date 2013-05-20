@@ -21,6 +21,3 @@ elif settings.ENDPOINT_MODE == 'PANEL':
     urlpatterns.extend([
         url(r'', include('urls_panel'))
     ])
-
-
-

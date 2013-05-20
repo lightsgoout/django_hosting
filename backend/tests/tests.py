@@ -16,5 +16,3 @@ class TestDjangoVersion(TestCase):
         self.assertFalse(django_version.is_python_version_supported(
             python_24
         ))
-
-

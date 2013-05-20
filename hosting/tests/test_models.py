@@ -175,8 +175,3 @@ class TestDjangoHostingService(TestCase):
         self.service.full_clean()
         self.service.requirements_file = 'deploy/requirements.txt'
         self.service.full_clean()
-
-
-
-
-

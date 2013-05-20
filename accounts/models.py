@@ -14,4 +14,3 @@ class BillingInformation(models.Model):
     address = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=63)
     phone = models.CharField(max_length=31)
-

@@ -222,7 +222,6 @@ class DjangoHostingService(AbstractHostingService):
                     'Invalid requirements file: %s' % self.requirements_file
                 )
 
-
     def __unicode__(self):
         def get_status(status):
             if status == HOSTING_SERVICE_ACTIVE:
