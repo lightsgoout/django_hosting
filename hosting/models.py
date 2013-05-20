@@ -311,5 +311,5 @@ def enqueue_deploy_django_hosting_service(sender, instance, **kwargs):
     from tasks import deploy_django_hosting_service
 
     deploy_django_hosting_service.apply_async(
-        (instance,), queue=instance.server.hostname
+        (instance,)
     )

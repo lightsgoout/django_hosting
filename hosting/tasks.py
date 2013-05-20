@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 
 from hosting.models import HOSTING__HOME_PATH, HOSTING__VIRTUALENVS_PATH, \
     HOSTING__LOG_RELATIVE_PATH, HOSTING__NGINX_CONFIG_PATH, \
-    HOSTING__NGINX_GROUP
+    HOSTING__NGINX_USER
 
 logger = get_task_logger(__name__)
 
@@ -20,7 +20,7 @@ def deploy_django_hosting_service(service, *args, **kwargs):
     c = chain(
         create_hosting_www_user.s(service),
         add_nginx_to_user_group.s(service),
-        #create_hosting_home_dir.s(service),
+        create_hosting_home_dir.s(service),
         create_hosting_log_dir.s(service),
         create_hosting_virtualenv.s(service),
         create_django_uwsgi_config.s(service),
@@ -37,9 +37,8 @@ def create_hosting_www_user(service, *args, **kwargs):
     """
     logger.info('[%s] Creating hosting www user...' % service.get_id())
     os.system(
-        'sudo useradd --home-dir %s --shell /usr/sbin/nologin --gid %s %s' % (
+        'sudo useradd --home-dir %s --shell /usr/sbin/nologin --user-group %s' % (
             service.home_path,
-            service.get_www_group(),
             service.get_www_user()
         )
     )
@@ -55,27 +54,27 @@ def add_nginx_to_user_group(service, *args, **kwargs):
     os.system(
         'sudo usermod -a -G %s %s' % (
             service.get_www_group(),
-            HOSTING__NGINX_GROUP
+            HOSTING__NGINX_USER
         )
     )
     return service
 
-#
-# @task()
-# def create_hosting_home_dir(service, *args, **kwargs):
-#     """
-#     @type service DjangoHostingService
-#     """
-#     logger.info('[%s] Creating hosting home dir...' % service.get_id())
-#     try:
-#         os.mkdir(service.home_path, 0770)
-#     except OSError as exc:
-#         if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
-#             os.chmod(service.home_path, 0770)
-#         else:
-#             raise
-#
-#     return service
+
+@task()
+def create_hosting_home_dir(service, *args, **kwargs):
+    """
+    @type service DjangoHostingService
+    """
+    logger.info('[%s] Creating hosting home dir...' % service.get_id())
+    try:
+        os.mkdir(service.home_path, 0770)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(service.home_path):
+            os.chmod(service.home_path, 0770)
+        else:
+            raise
+
+    return service
 
 
 @task()
