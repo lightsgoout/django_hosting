@@ -16,7 +16,7 @@ def deploy_django_hosting_service(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
-
+    os.chroot(service.get_home_path())
     c = chain(
         create_hosting_www_user.s(service),
         add_nginx_to_user_group.s(service),
@@ -195,15 +195,16 @@ def install_requirements(service, *args, **kwargs):
     """
     @type service DjangoHostingService
     """
-    if service.requirements_file is not None:
-        logger.info(
-            "Installing requirements file: %s ..." % service.requirements_file
-        )
-        os.system(
-            'sudo workon %s && pip install -r %s' % (
-                service.get_id(),
-                service.requirements_file
+    if service.requirements_file:
+        if os.path.isfile(service.requirements_file):
+            logger.info(
+                "Installing requirements file: %s ..." % service.requirements_file
             )
-        )
+            os.system(
+                'sudo workon %s && pip install -r %s' % (
+                    service.get_id(),
+                    service.requirements_file
+                )
+            )
 
     return service
