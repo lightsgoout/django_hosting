@@ -269,6 +269,9 @@ class DjangoHostingService(AbstractHostingService):
     def get_virtualenv_path(self):
         return "%s%s/" % (HOSTING__VIRTUALENVS_PATH, self.get_id())
 
+    def get_log_path(self):
+        return "%s%s/" % (self.get_home_path(), HOSTING__LOG_RELATIVE_PATH)
+
 
 @receiver(signals.post_save, sender=DjangoHostingAccount)
 def update_django_hosting_service_status(sender, instance, **kwargs):
