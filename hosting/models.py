@@ -306,6 +306,11 @@ def update_django_hosting_service_status(sender, instance, **kwargs):
 
 @receiver(signals.post_save, sender=DjangoHostingService)
 def enqueue_deploy_django_hosting_service(sender, instance, **kwargs):
+    """
+    @type instance DjangoHostingService
+    """
     from tasks import deploy_django_hosting_service
 
-    deploy_django_hosting_service.delay(instance, countdown=10)
+    deploy_django_hosting_service.apply_async(
+        instance, queue=instance.server.hostname
+    )
