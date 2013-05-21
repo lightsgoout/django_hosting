@@ -205,7 +205,7 @@ class DjangoHostingService(AbstractHostingService):
 
         s = u"[%s] %s at %s" % (
             get_status(self.status),
-            self.pk,
+            self.get_id(),
             self.server.hostname
         )
         return s
