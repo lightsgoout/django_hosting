@@ -203,8 +203,11 @@ class DjangoHostingService(AbstractHostingService):
             if status == HOSTING_SERVICE_EXPIRED:
                 return u'EXPIRED'
 
-        s = u"[%s] %s %s at %s" % (get_status(self.status), self.pk,
-                                   self.account, self.server.hostname)
+        s = u"[%s] %s at %s" % (
+            get_status(self.status),
+            self.pk,
+            self.server.hostname
+        )
         return s
 
     def get_access_log_file(self):
