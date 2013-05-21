@@ -1,0 +1,10 @@
+{% extends "panel/index.html" %}
+{% block content %}
+    <h3>Authentication</h3>
+    <form method="POST" action="/accounts/login/">
+        {% csrf_token %}
+        {{ form }}
+        <br>
+        <input type="submit" class="btn btn-primary">
+    </form>
+{% endblock %}
