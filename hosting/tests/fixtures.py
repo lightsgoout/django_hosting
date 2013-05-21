@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test.utils import override_settings
 from backend.tests.fixtures import create_python_version, \
     create_django_version, create_django_hosting_server
-from hosting.models import DjangoHostingAccount, DjangoHostingTariff, \
+from hosting.models import DjangoHostingTariff, \
     DjangoHostingService, Domain
 
 
@@ -34,26 +34,6 @@ def create_django_hosting_tariff(name="Django fake tariff", is_published=True,
     )
 
 
-def create_django_hosting_account(tariff=None, client=None, start_at=None,
-                                  end_at=None, status='T'):
-    if tariff is None:
-        tariff = create_django_hosting_tariff()
-    if client is None:
-        client = create_client()
-    if start_at is None:
-        start_at = datetime.datetime.now()
-    if end_at is None:
-        end_at = '2025-01-01'
-
-    return DjangoHostingAccount.objects.create(
-        tariff=tariff,
-        client=client,
-        start_at=start_at,
-        end_at=end_at,
-        status=status,
-    )
-
-
 def create_domain(domain=None, owner=None):
     import uuid
 
@@ -70,11 +50,18 @@ def create_domain(domain=None, owner=None):
 
 @override_settings(BROKER_BACKEND='memory')
 @override_settings(BROKER_URL='')
-def create_django_hosting_service(account=None, python_version=None,
+def create_django_hosting_service(tariff=None, owner=None, start_at=None,
+                                  end_at=None, python_version=None,
                                   django_version=None, server=None,
                                   status='T', domain=None):
-    if account is None:
-        account = create_django_hosting_account()
+    if tariff is None:
+        tariff = create_django_hosting_tariff()
+    if owner is None:
+        owner = create_client()
+    if start_at is None:
+        start_at = datetime.datetime.now()
+    if end_at is None:
+        end_at = '2025-01-01'
     if python_version is None:
         python_version = create_python_version()
     if django_version is None:
@@ -86,10 +73,13 @@ def create_django_hosting_service(account=None, python_version=None,
             python_version
         ])
     if domain is None:
-        domain = create_domain(owner=account.client)
+        domain = create_domain(owner=owner)
 
     return DjangoHostingService.objects.create(
-        account=account,
+        tariff=tariff,
+        owner=owner,
+        start_at=start_at,
+        end_at=end_at,
         python_version=python_version,
         django_version=django_version,
         server=server,

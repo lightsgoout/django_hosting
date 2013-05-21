@@ -35,18 +35,6 @@ HOSTING_SERVICE_STATUS_CHOICES = (
     (HOSTING_SERVICE_EXPIRED, 'EXPIRED'),
 )
 
-HOSTING_ACCOUNT_ACTIVE_TEST = HOSTING_SERVICE_ACTIVE_TEST
-HOSTING_ACCOUNT_ACTIVE = HOSTING_SERVICE_ACTIVE
-HOSTING_ACCOUNT_BLOCKED = HOSTING_SERVICE_BLOCKED
-HOSTING_ACCOUNT_EXPIRED = HOSTING_SERVICE_EXPIRED
-
-HOSTING_ACCOUNT_STATUS_CHOICES = (
-    (HOSTING_ACCOUNT_ACTIVE_TEST, 'ACTIVE_TEST'),
-    (HOSTING_ACCOUNT_ACTIVE, 'ACTIVE'),
-    (HOSTING_ACCOUNT_BLOCKED, 'BLOCKED'),
-    (HOSTING_ACCOUNT_EXPIRED, 'EXPIRED'),
-)
-
 
 class AbstractHostingService(models.Model):
     class Meta:
@@ -98,32 +86,23 @@ class DjangoHostingTariff(models.Model):
         return self.name
 
 
-class DjangoHostingAccount(models.Model):
-    client = models.ForeignKey(User,
-                               related_name='hosting_accounts',
-                               on_delete=models.PROTECT)
+class DjangoHostingService(AbstractHostingService):
+    owner = models.ForeignKey(
+        User,
+        related_name='django_services',
+        on_delete=models.PROTECT
+    )
     tariff = models.ForeignKey(DjangoHostingTariff, on_delete=models.PROTECT)
     start_at = models.DateTimeField()
     end_at = models.DateTimeField()
-    status = models.CharField(max_length=1,
-                              choices=HOSTING_ACCOUNT_STATUS_CHOICES,
-                              default=HOSTING_ACCOUNT_ACTIVE_TEST)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
-        return u'%s\'s %s' % (self.client, self.tariff)
-
-
-class DjangoHostingService(AbstractHostingService):
-    account = models.ForeignKey(DjangoHostingAccount,
-                                related_name='hosting_services')
     python_version = models.ForeignKey(PythonVersion, on_delete=models.PROTECT)
     django_version = models.ForeignKey(DjangoVersion, on_delete=models.PROTECT)
     server = models.ForeignKey(DjangoHostingServer, on_delete=models.PROTECT)
     status = models.CharField(max_length=1,
                               choices=HOSTING_SERVICE_STATUS_CHOICES,
                               default=HOSTING_SERVICE_DEPLOY_IN_PROGRESS)
-    created_at = models.DateTimeField(auto_now_add=True)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
 
     django_static_path = models.CharField(max_length=255, default='static',
@@ -219,9 +198,9 @@ class DjangoHostingService(AbstractHostingService):
                 return u'DEPLOY_IN_PROGRESS'
             if status == HOSTING_SERVICE_ACTIVE_TEST:
                 return u'ACTIVE_TEST'
-            if status == HOSTING_ACCOUNT_BLOCKED:
+            if status == HOSTING_SERVICE_BLOCKED:
                 return u'BLOCKED'
-            if status == HOSTING_ACCOUNT_EXPIRED:
+            if status == HOSTING_SERVICE_EXPIRED:
                 return u'EXPIRED'
 
         s = u"[%s] %s %s at %s" % (get_status(self.status), self.pk,
@@ -271,27 +250,6 @@ class DjangoHostingService(AbstractHostingService):
 
     def get_log_path(self):
         return "%s%s/" % (self.get_home_path(), HOSTING__LOG_RELATIVE_PATH)
-
-
-@receiver(signals.post_save, sender=DjangoHostingAccount)
-def update_django_hosting_service_status(sender, instance, **kwargs):
-    services = DjangoHostingService.objects.filter(
-        account=instance
-    )
-    for service in services:
-        if service.status == HOSTING_SERVICE_DEPLOY_IN_PROGRESS:
-            if instance.status in (HOSTING_ACCOUNT_ACTIVE_TEST,
-                                   HOSTING_ACCOUNT_ACTIVE):
-                # continue deployment if account is active
-                pass
-            else:
-                # if blocked or expired then break deployment
-                service.status = instance.status
-                service.save()
-        else:
-            if service.status != instance.status:
-                service.status = instance.status
-                service.save()
 
 
 @receiver(signals.post_save, sender=DjangoHostingService)
