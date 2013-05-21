@@ -9,7 +9,7 @@ def index(request, extra_context=None):
         owner=request.user
     )
 
-    return TemplateResponse(request, 'panel/index.html', context={
+    return TemplateResponse(request, 'panel/home.html', context={
         'django_services': django_services,
         'pointer': 'home'
     })
