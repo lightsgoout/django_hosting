@@ -11,4 +11,18 @@ def index(request, extra_context=None):
 
     return TemplateResponse(request, 'panel/index.html', context={
         'django_services': django_services,
+        'pointer': 'home'
     })
+
+
+@login_required
+def services(request):
+    django_services = DjangoHostingService.objects.filter(
+        owner=request.user
+    )
+
+    return TemplateResponse(request, 'panel/services.html', context={
+        'django_services': django_services,
+        'pointer': 'services'
+    })
+

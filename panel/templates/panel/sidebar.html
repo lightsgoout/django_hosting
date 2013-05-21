@@ -1,16 +1,24 @@
 <div id="sidebar-nav" class="hidden-phone">
     <ul id="dashboard-menu">
-        <li class="active">
-            <div class="pointer">
-                <div class="arrow"></div>
-                <div class="arrow_border"></div>
-            </div>
+        <li class="{% if pointer == 'home' %}active{% endif %}">
+            {% if pointer == 'home' %}
+                <div class="pointer">
+                    <div class="arrow"></div>
+                    <div class="arrow_border"></div>
+                </div>
+            {% endif %}
             <a class="tab1" href="/">
                 <i class="sidebar-home"></i>
                 <span>Home</span>
             </a>
         </li>
-        <li class="">
+        <li class="{% if pointer == 'services' %}active{% endif %}">
+            {% if pointer == 'services' %}
+                <div class="pointer">
+                    <div class="arrow"></div>
+                    <div class="arrow_border"></div>
+                </div>
+            {% endif %}
             <a class="tab5" href="/services/">
                 <i class="sidebar-widgets"></i>
                 <span>Services</span>

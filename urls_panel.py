@@ -6,6 +6,9 @@ urlpatterns = patterns(
     '',
     url(r'^$',
         panel.views.index,
-        name='index'),
+        name='panel_index'),
+    url(r'^services/$',
+        panel.views.services,
+        name='panel_services'),
     url(r'^accounts/', include('registration.backends.default.urls')),
 )
