@@ -1,3 +1,11 @@
 #pad-wrapper h4 {
     font-style: normal;
 }
+
+#sidebar-nav {
+    padding-top: 0.8em;
+}
+
+#pad-wrapper {
+    margin-top: 25px;
+}

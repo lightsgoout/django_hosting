@@ -25,121 +25,45 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th class="span3">
+                    <th class="span2">
                         <input type="checkbox">
-                        Product
+                        Service ID
                     </th>
-                    <th class="span3">
+                    <th class="span2">
                         <span class="line"></span>Description
                     </th>
-                    <th class="span3">
+                    <th class="span2">
                         <span class="line"></span>Status
+                    </th>
+                    <th class="span2">
+                        <span class="line"></span>Dates
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <!-- row -->
-                <tr class="first">
-                    <td>
-                        <input type="checkbox">
-
-                        <div class="img">
-                            <img src="img/table-img.png">
-                        </div>
-                        <a href="#" class="name">Generate Lorem </a>
-                    </td>
-                    <td class="description">
-                        if you are going to use a passage of Lorem Ipsum.
-                    </td>
-                    <td>
-                        <span class="label label-success">Active</span>
-                        <ul class="actions">
-                            <li><a href="#">Edit</a></li>
-                            <li class="last"><a href="#">Delete</a></li>
-                        </ul>
-                    </td>
-                </tr>
-                <!-- row -->
-                <tr>
-                    <td>
-                        <input type="checkbox">
-
-                        <div class="img">
-                            <img src="img/table-img.png">
-                        </div>
-                        <a href="#" class="name">Internet tend</a>
-                    </td>
-                    <td class="description">
-                        There are many variations of passages.
-                    </td>
-                    <td>
-                        <ul class="actions">
-                            <li><a href="#">Edit</a></li>
-                            <li class="last"><a href="#">Delete</a></li>
-                        </ul>
-                    </td>
-                </tr>
-                <!-- row -->
-                <tr>
-                    <td>
-                        <input type="checkbox">
-
-                        <div class="img">
-                            <img src="img/table-img.png">
-                        </div>
-                        <a href="#" class="name">Generate Lorem </a>
-                    </td>
-                    <td class="description">
-                        if you are going to use a passage of Lorem Ipsum.
-                    </td>
-                    <td>
-                        <ul class="actions">
-                            <li><a href="#">Edit</a></li>
-                            <li class="last"><a href="#">Delete</a></li>
-                        </ul>
-                    </td>
-                </tr>
-                <!-- row -->
-                <tr>
-                    <td>
-                        <input type="checkbox">
-
-                        <div class="img">
-                            <img src="img/table-img.png">
-                        </div>
-                        <a href="#" class="name">Internet tend</a>
-                    </td>
-                    <td class="description">
-                        There are many variations of passages.
-                    </td>
-                    <td>
-                        <span class="label label-info">Standby</span>
-                        <ul class="actions">
-                            <li><a href="#">Edit</a></li>
-                            <li class="last"><a href="#">Delete</a></li>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="checkbox">
-
-                        <div class="img">
-                            <img src="img/table-img.png">
-                        </div>
-                        <a href="#" class="name">Generate Lorem </a>
-                    </td>
-                    <td class="description">
-                        if you are going to use a passage of Lorem Ipsum.
-                    </td>
-                    <td>
-                        <span class="label label-success">Active</span>
-                        <ul class="actions">
-                            <li><a href="#">Edit</a></li>
-                            <li class="last"><a href="#">Delete</a></li>
-                        </ul>
-                    </td>
-                </tr>
+                {% for service in django_services %}
+                    <tr>
+                        <td>
+                            <input type="checkbox">
+                            <a href="#" class="name">{{ service.get_id }}</a>
+                        </td>
+                        <td class="description">
+                            {{ service.python_version }}<br/>
+                            {{ service.django_version }}
+                        </td>
+                        <td>
+                            {{ service.start_at }}&mdash;{{ service.end_at }}
+                        </td>
+                        <td>
+                            <span class="label label-success">Active</span>
+                            <ul class="actions">
+                                <li><a href="#">Edit</a></li>
+                                <li class="last"><a href="#">Delete</a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
