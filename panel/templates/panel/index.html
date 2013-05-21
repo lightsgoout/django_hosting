@@ -2,24 +2,59 @@
 <html>
 <head>
     <title>Can I host pls k thx</title>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css"
-          rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/main.css" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+    <!-- bootstrap -->
+    <link href="{{ STATIC_URL }}css/bootstrap/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap/bootstrap-responsive.css"
+          rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap/bootstrap-overrides.css"
+          rel="stylesheet">
+
+    <!-- global styles -->
+    <link rel="stylesheet" type="text/css"
+          href="{{ STATIC_URL }}css/layout.css">
+    <link rel="stylesheet" type="text/css"
+          href="{{ STATIC_URL }}css/elements.css">
+    <link rel="stylesheet" type="text/css"
+          href="{{ STATIC_URL }}css/icons.css">
+
+    <!-- libraries -->
+    <link href="{{ STATIC_URL }}css/lib/font-awesome.css" type="text/css"
+          rel="stylesheet"/>
+
+    <!-- open sans font -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+          rel='stylesheet' type='text/css'>
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    {#    <link rel="stylesheet" href="css/compiled/tables.css" type="text/css" media="screen" />#}
+
+
+    {#    <link href="{{ STATIC_URL }}css/layout.css" rel="stylesheet">#}
 
 </head>
 <body>
-
-
-<div class="container">
-    <header class="page-header">
-        {% include "panel/header.html" %}
-        {% include "panel/services.html" %}
-    </header>
-    {% block content %} {% endblock %}
+{% include "panel/header.html" %}
+{% include "panel/sidebar.html" %}
+<div class="content">
+    <div class="pointer">
+        <div class="arrow"></div>
+        <div class="arrow_border"></div>
+    </div>
+    <div class="container-fluid">
+        <div id="pad-wrapper">
+            {% block content %} {% endblock %}
+        </div>
+    </div>
 </div>
+
 </body>
 </html>
