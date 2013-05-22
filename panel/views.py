@@ -11,7 +11,10 @@ def index(request, extra_context=None):
 
     return TemplateResponse(request, 'panel/home.html', context={
         'django_services': django_services,
-        'pointer': 'home'
+        'pointer': 'home',
+        'django_tariff': request.user.django_account.django_tariff,
+        'django_vhosts_total': len(django_services),
+        'django_vhosts_available': request.user.django_account.django_tariff.vhost_count
     })
 
 

@@ -1,8 +1,9 @@
 {% extends "panel/main.html" %}
 {% block content %}
     <div class="row-fluid header">
-        <h3>Dashboard</h3>
-        <h5>Tariff: {{ tariff }}</h5>
-
+        <h4>Dashboard</h4>
     </div>
+    <h5>Tariff: {{ django_tariff }}</h5>
+    <h5>Virtual hosts
+        used: {{ django_vhosts_total }}/{{ django_vhosts_available }}</h5>
 {% endblock %}
