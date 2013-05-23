@@ -9,12 +9,28 @@ def index(request, extra_context=None):
         owner=request.user
     )
 
+    vhosts_available = request.user.django_account.django_tariff.vhost_count
+    vhosts_total = len(django_services)
+
+    if not vhosts_available:
+        usage_bar_level = 'ok'
+        usage_bar_value = 0
+    else:
+        usage_bar_value = int(round(100 / vhosts_available * vhosts_total))
+        if usage_bar_value > 100:
+            usage_bar_level = 'danger'
+            usage_bar_value = 100
+
     return TemplateResponse(request, 'panel/home.html', context={
+
+
         'django_services': django_services,
         'pointer': 'home',
         'django_tariff': request.user.django_account.django_tariff,
-        'django_vhosts_total': len(django_services),
-        'django_vhosts_available': request.user.django_account.django_tariff.vhost_count
+        'django_vhosts_total': vhosts_total,
+        'django_vhosts_available': vhosts_available,
+        'usage_bar_value': usage_bar_value,
+        'usage_bar_level': usage_bar_level
     })
 
 

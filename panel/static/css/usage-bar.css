@@ -1,0 +1,56 @@
+.usage-bar {
+    width: 198px;
+}
+
+.usage-bar dd {
+    background-color: #f1f1f1;
+    background-image: -moz-linear-gradient(#dadada, #f1f1f1);
+    background-image: -webkit-linear-gradient(#dadada, #f1f1f1);
+    background-image: linear-gradient(#dadada, #f1f1f1);
+    background-repeat: repeat-x;
+    display: block;
+    margin: 0 0 10px 0;
+    height: 8px;
+    border-radius: 5px;
+    width: 198px;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 0 #fff;
+}
+
+.usage-bar dt strong {
+    float: right;
+    color: #999;
+}
+
+.usage-bar dt {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #777;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.usage-bar dd span {
+    background-color: #63ae26;
+    background-image: -moz-linear-gradient(#81c54a, #63ae26);
+    background-image: -webkit-linear-gradient(#81c54a, #63ae26);
+    background-image: linear-gradient(#81c54a, #63ae26);
+    background-repeat: repeat-x;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    display: block;
+    border-radius: 5px;
+    height: 8px;
+}
+
+.usage-bar dd span.danger {
+    background-color: #edc900;
+    background-image: -moz-linear-gradient(#F66072, #ED0000);
+    background-image: -webkit-linear-gradient(#F66072, #ED0000);
+    background-image: linear-gradient(rgb(246, 96, 114), rgb(237, 0, 0));
+    background-repeat: repeat-x;
+}
+
+.usage-bar dd span.ok {
+
+}

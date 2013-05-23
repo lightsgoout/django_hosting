@@ -3,7 +3,13 @@
     <div class="row-fluid header">
         <h4>Dashboard</h4>
     </div>
-    <h5>Tariff: {{ django_tariff }}</h5>
-    <h5>Virtual hosts
-        used: {{ django_vhosts_total }}/{{ django_vhosts_available }}</h5>
+    <h5>Current tariff: <a href="#">{{ django_tariff }}</a></h5>
+    <div class="usage-bar">
+        <dl>
+            <dt>Virtual hosts used <strong>{{ django_vhosts_total }}
+                of {{ django_vhosts_available }}</strong></dt>
+            <dd><span style="width: {{ usage_bar_value }}%;"
+                      class="{{ usage_bar_level }}"></span></dd>
+        </dl>
+    </div>
 {% endblock %}
