@@ -9,15 +9,15 @@ def index(request, extra_context=None):
         owner=request.user
     )
 
-    vhosts_available = request.user.django_account.django_tariff.vhost_count
+    vhosts_available = 4#request.user.django_account.django_tariff.vhost_count
     vhosts_total = len(django_services)
-
+    vhosts_total = 3
+    usage_bar_level = 'ok'
     if not vhosts_available:
-        usage_bar_level = 'ok'
         usage_bar_value = 0
     else:
         usage_bar_value = int(round(100 / vhosts_available * vhosts_total))
-        if usage_bar_value > 100:
+        if usage_bar_value >= 100:
             usage_bar_level = 'danger'
             usage_bar_value = 100
 
