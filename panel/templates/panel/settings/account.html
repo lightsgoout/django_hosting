@@ -17,7 +17,7 @@
 
             <h5 class="personal-title">Account info</h5>
 
-            <form action="/settings/account/edit" method="post">
+            <form action="/settings/account/" method="post">{% csrf_token %}
                 {% for form in forms %}
                     {% for field in form %}
                         <div class="field-box">
@@ -38,7 +38,7 @@
                     {% endfor %}
                 {% endfor %}
                 <div class="span6 field-box actions">
-                    <input type="button" class="btn-glow primary"
+                    <input type="submit" class="btn-glow primary"
                            value="Save Changes">
                     <span>OR</span>
                     <input type="reset" value="Cancel" class="reset">

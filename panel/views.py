@@ -46,9 +46,17 @@ def services(request):
 
 @login_required
 def settings_account(request):
-    account = request.user.account
-    account_form = AccountForm(instance=account)
-    user_form = UserForm(instance=request.user)
+    if request.method == 'POST':
+        account_form = AccountForm(request.POST, instance=request.user.account)
+        user_form = UserForm(request.POST, instance=request.user)
+        if account_form.is_valid():
+            account_form.save()
+        if user_form.is_valid():
+            user_form.save()
+    else:
+        account_form = AccountForm(instance=request.user.account)
+        user_form = UserForm(instance=request.user)
+
     return TemplateResponse(request, 'panel/settings/account.html', context={
         'forms': (account_form, user_form)
     })

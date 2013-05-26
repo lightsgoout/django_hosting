@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, url, include
 import panel.views
 
-
 urlpatterns = patterns(
     '',
     url(r'^$',

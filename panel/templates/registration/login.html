@@ -1,10 +1,46 @@
-{% extends "panel/index.html" %}
+{% extends "panel/main-nolayout.html" %}
 {% block content %}
-    <h3>Authentication</h3>
-    <form method="POST" action="/accounts/login/">
-        {% csrf_token %}
-        {{ form }}
-        <br>
-        <input type="submit" class="btn btn-primary">
-    </form>
+    <div class="row-fluid login-wrapper">
+        <img class="logo" src="{{ STATIC_URL }}img/logo-white.png">
+
+        <div class="span4 box">
+            <div class="content-wrap">
+                <h6>Log in</h6>
+                {% for err in form.non_field_errors %}
+                    <p>{{ err }}</p>
+                {% endfor %}
+                <form method="POST" action="/accounts/login/">{% csrf_token %}
+                    <input class="span12" type="text"
+                           placeholder="E-mail address" name="username"
+                           required="required">
+                    <input class="span12" type="password"
+                           placeholder="Your password" name="password"
+                           required="required">
+                    <a href="#" class="forgot">Forgot password?</a>
+
+                    <div class="remember">
+                        <input id="remember-me" type="checkbox">
+                        <label for="remember-me">Remember me</label>
+                    </div>
+                    <input type="submit" class="btn-glow primary login"
+                           value="Log in">
+                </form>
+            </div>
+        </div>
+
+        <div class="span4 no-account">
+            <p>Don't have an account?</p>
+            <a href="signup.html">Sign up</a>
+        </div>
+    </div>
+
+    <!-- scripts -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/theme.js"></script>
+
+    <!-- pre load bg imgs -->
+    <script type="text/javascript">
+        $("html").css("background-image", "url('{{ STATIC_URL }}img/bgs/9.jpg')");
+    </script>
 {% endblock %}

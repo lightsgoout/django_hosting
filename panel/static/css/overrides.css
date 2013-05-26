@@ -86,3 +86,10 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     width: 32%;
 }
 
+.settings-wrapper .personal-info .actions {
+    text-align: left;
+}
+
+.login-wrapper .box a.forgot {
+    font-style: normal;
+}
