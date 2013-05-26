@@ -14,14 +14,14 @@
     margin-bottom: 25px;
 }
 
-.settings-wrapper .personal-info h5.personal-title {
+.form-wrapper h5.personal-title {
     font-size: 22px;
     margin: 0 0 50px 0px;
     color: #696d73;
     font-style: normal;
 }
 
-.settings-wrapper .personal-info {
+.form-wrapper {
     border-left: none;
     box-shadow: none;
 }
@@ -30,7 +30,7 @@ a.active {
     color: black;
 }
 
-.settings-wrapper .personal-info form {
+.form-wrapper form {
     margin-left: 0px;
 }
 
@@ -82,11 +82,11 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     border-radius: 4px;
 }
 
-.settings-wrapper .personal-info .ui-select {
+.form-wrapper .ui-select {
     width: 32%;
 }
 
-.settings-wrapper .personal-info .actions {
+.form-wrapper .actions {
     text-align: left;
 }
 

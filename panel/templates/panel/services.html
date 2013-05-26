@@ -1,71 +1,10 @@
 {% extends "panel/main.html" %}
 {% block content %}
-    <div class="table-wrapper products-table section">
-        <div class="row-fluid head">
-            <div class="span12">
-                <h4>Services</h4>
-            </div>
-        </div>
 
-        <div class="row-fluid filter-block">
-            <div class="pull-right">
-                <div class="ui-select">
-                    <select>
-                        <option>Filter users</option>
-                        <option>Signed last 30 days</option>
-                        <option>Active users</option>
-                    </select>
-                </div>
-                <input type="text" class="search">
-                <a class="btn-flat success new-product">+ Add product</a>
-            </div>
-        </div>
+    {% ifequal django_services|length 0 %}
+        {% include "panel/services/empty.html" %}
+    {% else %}
+        {% include "panel/services/table.html" %}
+    {% endifequal %}
 
-        <div class="row-fluid">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th class="span2">
-                        <input type="checkbox">
-                        Service ID
-                    </th>
-                    <th class="span2">
-                        <span class="line"></span>Description
-                    </th>
-                    <th class="span2">
-                        <span class="line"></span>Status
-                    </th>
-                    <th class="span2">
-                        <span class="line"></span>Dates
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- row -->
-                {% for service in django_services %}
-                    <tr>
-                        <td>
-                            <input type="checkbox">
-                            <a href="#" class="name">{{ service.get_id }}</a>
-                        </td>
-                        <td class="description">
-                            {{ service.python_version }}<br/>
-                            {{ service.django_version }}
-                        </td>
-                        <td>
-                            {{ service.start_at }}&mdash;{{ service.end_at }}
-                        </td>
-                        <td>
-                            <span class="label label-success">Active</span>
-                            <ul class="actions">
-                                <li><a href="#">Edit</a></li>
-                                <li class="last"><a href="#">Delete</a></li>
-                            </ul>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
 {% endblock %}

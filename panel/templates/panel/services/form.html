@@ -1,0 +1,32 @@
+{% load widget_tweaks %}
+<div class="form-wrapper section">
+    <!-- left column -->
+    <div class="span7">
+        <h5 class="personal-title">Create your first service</h5>
+
+        <form action="/settings/account/" method="post">{% csrf_token %}
+            {% for field in form %}
+                <div class="field-box">
+                    {{ field.errors }}
+                    {{ field.label_tag }}
+                    {% if field.field.choices %}
+                        <div class="ui-select">
+                    {% endif %}
+                    {% if field.name in form.Meta.readonly_fields %}
+                        {{ field|add_class:"inline-input"|attr:"readonly:readonly" }}
+                    {% else %}
+                        {{ field|add_class:"inline-input" }}
+                    {% endif %}
+                    {% if field.field.choices %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="span6 field-box actions">
+                <input type="submit" class="btn-glow primary"
+                       value="Save Changes">
+                <span>OR</span>
+                <input type="reset" value="Cancel" class="reset">
+            </div>
+    </div>
+</div>

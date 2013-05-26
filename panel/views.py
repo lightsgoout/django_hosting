@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from hosting.models import DjangoHostingService
-from panel.forms import AccountForm, UserForm
+from panel.forms import AccountForm, UserForm, DjangoHostingServiceForm
 
 
 @login_required
@@ -37,10 +37,12 @@ def services(request):
     django_services = DjangoHostingService.objects.filter(
         owner=request.user
     )
+    form = DjangoHostingServiceForm()
 
     return TemplateResponse(request, 'panel/services.html', context={
         'django_services': django_services,
-        'pointer': 'services'
+        'pointer': 'services',
+        'form': form
     })
 
 
