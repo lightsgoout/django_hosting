@@ -10,9 +10,16 @@
                 of {{ django_vhosts_available }}</strong></dt>
             <dd><span style="width: {{ usage_bar_value }}%;"
                       class="{{ usage_bar_level }}"></span></dd>
+            {% if django_vhosts_total < django_vhosts_available %}
+                <a class="btn-flat btn-large primary" href="/services/create/"><i
+                        class="icon-plus"></i> Create virtual host</a>
+            {% else %}
+                <p>Your virtual hosts quota is exceeded. You can upgrade your
+                    account to get more.</p>
+                <a class="btn-flat success" href="/account/upgrade/"><i
+                        class="icon-upload"></i> Upgrade</a>
+            {% endif %}
 
-            <a class="btn-flat success" href="/account/upgrade/"><i
-                    class="icon-upload"></i> Upgrade</a>
         </dl>
     </div>
 {% endblock %}
