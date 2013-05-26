@@ -33,3 +33,56 @@ a.active {
 .settings-wrapper .personal-info form {
     margin-left: 0px;
 }
+
+element.style {
+}
+
+Matched CSS Rules
+.inline-input input[type="text"], .inline-input input[type="password"], input[type="text"].inline-input, input[type="password"].inline-input {
+    background: #fff;
+    border-top: 0 none;
+    border-left: 0 none;
+    border-right: 0 none;
+    border-bottom: 1px solid #d0dde9;
+    border-radius: 0;
+    box-shadow: none;
+    border-color: #dee3ea;
+}
+
+input[type="text"], input[type="password"], textarea {
+    font-size: 13px;
+    -webkit-box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 0px 1px rgba(0, 0, 0, 0.075);
+}
+
+textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border linear .2s, box-shadow linear .2s;
+    -moz-transition: border linear .2s, box-shadow linear .2s;
+    -o-transition: border linear .2s, box-shadow linear .2s;
+    transition: border linear .2s, box-shadow linear .2s;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 20px;
+    padding: 0px 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #555;
+    vertical-align: middle;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.settings-wrapper .personal-info .ui-select {
+    width: 32%;
+}
+

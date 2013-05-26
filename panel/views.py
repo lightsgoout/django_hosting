@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from hosting.models import DjangoHostingService
+from panel.forms import AccountForm, UserForm
 
 
 @login_required
@@ -9,9 +10,8 @@ def index(request, extra_context=None):
         owner=request.user
     )
 
-    vhosts_available = 4#request.user.django_account.django_tariff.vhost_count
+    vhosts_available = request.user.account.django_tariff.vhost_count
     vhosts_total = len(django_services)
-    vhosts_total = 3
     usage_bar_level = 'ok'
     if not vhosts_available:
         usage_bar_value = 0
@@ -22,11 +22,9 @@ def index(request, extra_context=None):
             usage_bar_value = 100
 
     return TemplateResponse(request, 'panel/home.html', context={
-
-
         'django_services': django_services,
         'pointer': 'home',
-        'django_tariff': request.user.django_account.django_tariff,
+        'django_tariff': request.user.account.django_tariff,
         'django_vhosts_total': vhosts_total,
         'django_vhosts_available': vhosts_available,
         'usage_bar_value': usage_bar_value,
@@ -48,7 +46,11 @@ def services(request):
 
 @login_required
 def settings_account(request):
+    account = request.user.account
+    account_form = AccountForm(instance=account)
+    user_form = UserForm(instance=request.user)
     return TemplateResponse(request, 'panel/settings/account.html', context={
+        'forms': (account_form, user_form)
     })
 
 

@@ -1,4 +1,5 @@
 {% extends "panel/main.html" %}
+{% load widget_tweaks %}
 {% block content %}
     <div class="settings-wrapper section">
 
@@ -16,70 +17,26 @@
 
             <h5 class="personal-title">Account info</h5>
 
-            <form>
-                <div class="field-box">
-                    <label>First name:</label>
-                    <input class="span5 inline-input" type="text"
-                           name="first_name" value="{{ user.first_name }}">
-                </div>
-                <div class="field-box">
-                    <label>Last name:</label>
-                    <input class="span5 inline-input" type="text"
-                           name="last_name" value="{{ user.last_name }}">
-                </div>
-                <div class="field-box">
-                    <label>Company:</label>
-                    <input class="span5 inline-input" type="text"
-                           value="Design Co.">
-                </div>
-                <div class="field-box">
-                    <label>Email:</label>
-                    <input class="span5 inline-input" type="text"
-                           value="alejandra@design.com">
-                </div>
-                <div class="field-box">
-                    <label>Time Zone:</label>
-
-                    <div class="ui-select">
-                        <select id="user_time_zone" name="user[time_zone]">
-                            <option value="Hawaii">(GMT-10:00) Hawaii</option>
-                            <option value="Alaska">(GMT-09:00) Alaska</option>
-                            <option value="Pacific Time (US &amp; Canada)">
-                                (GMT-08:00) Pacific Time (US &amp; Canada)
-                            </option>
-                            <option value="Arizona">(GMT-07:00) Arizona
-                            </option>
-                            <option value="Mountain Time (US &amp; Canada)">
-                                (GMT-07:00) Mountain Time (US &amp; Canada)
-                            </option>
-                            <option value="Central Time (US &amp; Canada)"
-                                    selected="selected">(GMT-06:00) Central
-                                Time (US &amp; Canada)
-                            </option>
-                            <option value="Eastern Time (US &amp; Canada)">
-                                (GMT-05:00) Eastern Time (US &amp; Canada)
-                            </option>
-                            <option value="Indiana (East)">(GMT-05:00) Indiana
-                                (East)
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="field-box">
-                    <label>Username:</label>
-                    <input class="span5 inline-input" type="text"
-                           value="alegalvan">
-                </div>
-                <div class="field-box">
-                    <label>Password:</label>
-                    <input class="span5 inline-input" type="password"
-                           value="blablablabla">
-                </div>
-                <div class="field-box">
-                    <label>Confirm password:</label>
-                    <input class="span5 inline-input" type="password"
-                           value="blablablabla">
-                </div>
+            <form action="/settings/account/edit" method="post">
+                {% for form in forms %}
+                    {% for field in form %}
+                        <div class="field-box">
+                            {{ field.errors }}
+                            {{ field.label_tag }}
+                            {% if field.field.choices %}
+                                <div class="ui-select">
+                            {% endif %}
+                            {% if field.name in form.Meta.readonly_fields %}
+                                {{ field|add_class:"inline-input"|attr:"readonly:readonly" }}
+                            {% else %}
+                                {{ field|add_class:"inline-input" }}
+                            {% endif %}
+                            {% if field.field.choices %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
                 <div class="span6 field-box actions">
                     <input type="button" class="btn-glow primary"
                            value="Save Changes">

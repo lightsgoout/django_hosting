@@ -16,7 +16,7 @@ LEGAL_TYPES = (
 
 
 class DjangoAccount(models.Model):
-    user = models.OneToOneField(User, related_name='django_account')
+    user = models.OneToOneField(User, related_name='account')
     company_name = models.CharField(max_length=255, null=True, blank=True)
     legal_type = models.CharField(
         max_length=8,
