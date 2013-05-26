@@ -45,3 +45,15 @@ def services(request):
         'pointer': 'services'
     })
 
+
+@login_required
+def settings_account(request):
+    return TemplateResponse(request, 'panel/settings/account.html', context={
+    })
+
+
+@login_required
+def settings_billing(request):
+    return TemplateResponse(request, 'panel/settings/billing.html', context={
+    })
+

@@ -13,3 +13,23 @@
 .header {
     margin-bottom: 25px;
 }
+
+.settings-wrapper .personal-info h5.personal-title {
+    font-size: 22px;
+    margin: 0 0 50px 0px;
+    color: #696d73;
+    font-style: normal;
+}
+
+.settings-wrapper .personal-info {
+    border-left: none;
+    box-shadow: none;
+}
+
+a.active {
+    color: black;
+}
+
+.settings-wrapper .personal-info form {
+    margin-left: 0px;
+}
