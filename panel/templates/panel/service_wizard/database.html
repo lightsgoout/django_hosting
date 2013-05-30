@@ -6,13 +6,13 @@
             {{ field.errors }}
             {{ field.label_tag }}
 
-            {% if field.name == 'source' %}
+            {% if field.name == 'database' %}
                 <div class="span5">
                     {% for key,value in field.field.choices %}
                         <label class="radio">
                             <div class="radio">
                         <span class="">
-                            <input type="radio" name="source-source"
+                            <input type="radio" name="database-database"
                                    id="optionsRadios1" value="{{ key }}"
                                    checked="">
                         </span>
