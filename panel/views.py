@@ -69,3 +69,15 @@ def settings_billing(request):
     return TemplateResponse(request, 'panel/settings/billing.html', context={
     })
 
+
+@login_required
+def settings_password(request):
+    return TemplateResponse(request, 'panel/settings/password.html', context={
+    })
+
+
+# @login_required
+# def service_wizard(request):
+#     form = DjangoServiceWizard()
+
+

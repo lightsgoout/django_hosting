@@ -93,3 +93,16 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 .login-wrapper .box a.forgot {
     font-style: normal;
 }
+
+div.radio input {
+    opacity: 100;
+}
+
+div.selector, div.selector span, div.checker span, div.radio span, div.uploader, div.uploader span.action, div.button, div.button span {
+    background-image: none;
+}
+
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+    float: left;
+    margin-left: 0px;
+}

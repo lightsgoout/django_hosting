@@ -1,0 +1,38 @@
+{% extends "panel/main.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+
+{% block head %}
+    {{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+    <div class="form-wrapper section span7">
+        <div class="row-fluid head">
+            <div class="span12">
+                <h4>Creating service</h4>
+            </div>
+            <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+        </div>
+
+        <form action="" method="post">{% csrf_token %}
+            {{ wizard.management_form }}
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+
+                {% endfor %}
+            {% else %}
+                {% include "panel/service_wizard/source_form.html" %}
+            {% endif %}
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit"
+                        value="{{ wizard.steps.first }}">{% trans "first step" %}</button>
+                <button name="wizard_goto_step" type="submit"
+                        value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+            {% endif %}
+            <input type="submit" value="{% trans "submit" %}"/>
+        </form>
+    </div>
+{% endblock %}

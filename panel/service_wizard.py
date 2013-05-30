@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import RadioSelect
+from django.contrib.formtools.wizard.views import SessionWizardView
+from django.forms import RadioSelect, CheckboxSelectMultiple
 
 
 SOURCES_CHOICES = (
@@ -18,6 +19,7 @@ DATABASE_CHOICES = (
 
 SPECIAL_OPTION_CHOICES = (
     ('pip', 'Install specified packages via pip'),
+    ('pip_requirements', 'Install packages listed in requirements.txt')
 )
 
 POST_INSTALL_CHOICES = (
@@ -27,9 +29,42 @@ POST_INSTALL_CHOICES = (
 
 class SourceForm(forms.Form):
     source = forms.ChoiceField(widget=RadioSelect, choices=SOURCES_CHOICES)
+    vcs_url = forms.CharField(max_length=255, required=False)
 
 
-# FORMS = [("source", service_wizard.SourceForm),
-#          ("paytype", myapp.forms.PaymentChoiceForm),
-#          ("cc", myapp.forms.CreditCardForm),
-#          ("confirmation", myapp.forms.OrderForm)]
+class DatabaseForm(forms.Form):
+    database = forms.ChoiceField(widget=RadioSelect, choices=DATABASE_CHOICES)
+    dsn_url = forms.CharField(max_length=255, required=False)
+
+
+class SpecialOptionsForm(forms.Form):
+    choices = forms.ChoiceField(
+        widget=CheckboxSelectMultiple,
+        choices=SPECIAL_OPTION_CHOICES
+    )
+
+
+class PostInstallForm(forms.Form):
+    choices = forms.ChoiceField(
+        widget=CheckboxSelectMultiple,
+        choices=POST_INSTALL_CHOICES,
+    )
+
+
+FORMS = [("source", SourceForm),
+         ("database", DatabaseForm),
+         ("special", SpecialOptionsForm),
+         ("post_install", PostInstallForm)]
+
+TEMPLATES = {"source": "panel/service_wizard/source.html",
+             "database": "panel/service_wizard/database.html",
+             "special": "panel/service_wizard/special.html",
+             "post_install": "panel/service_wizard/post_install.html"}
+
+
+class DjangoServiceWizard(SessionWizardView):
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+
+    def done(self, form_list, **kwargs):
+        pass
